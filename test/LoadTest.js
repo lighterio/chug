@@ -1,4 +1,4 @@
-var load = require('../lighter-load');
+var load = require('../api');
 var assert = require('assert-plus');
 var fs = require('fs');
 
@@ -32,7 +32,7 @@ describe('Load', function () {
 		var views = load('test/views');
 		views.onReady(function () {
 			assert.equal(views.assets.length, 2);
-			var hasCachedItems = false;
+			var hasCachedItems;
 			for (location in load.cache) {
 				hasCachedItems = true;
 			}
@@ -48,8 +48,12 @@ describe('Load', function () {
 		load({});
 		assert.equal(errors, 1);
 	});
-	it('should load views as an array', function () {
+	it('should load views as an array', function (done) {
 		var views = load(['test/views/hello.ltl', 'test/views/base/page.ltl']);
+		views.onReady(function () {
+			assert.equal(views.assets.length, 2);
+			done();
+		});
 	});
 	it('should ignore a non-existent path', function () {
 		load('./test/non-existent-path');
@@ -88,5 +92,24 @@ describe('Load', function () {
 		assert.equal(errors, 1);
 		fs.readdir = readdir;
 		fs.stat = stat;
+	});
+	it('should iterate over views', function (done) {
+		var count = 0;
+		load('test/views')
+			.each(function (view) {
+				assert.equal(view.content.length > 0, true);
+				if (++count == 2) {
+					done();
+				}
+			});
+	});
+	it('should compile views', function (done) {
+		load('test/views/hello.ltl')
+			.compile()
+			.each(function (view) {
+				var startsWithTag = /</.test(view.compiledContent);
+				assert.equal(startsWithTag, true);
+			})
+			.then(done);
 	});
 });

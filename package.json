@@ -10,7 +10,7 @@
     "loader"
   ],
   "version": "0.0.1",
-  "main": "lighter-load.js",
+  "main": "api.js",
   "homepage": "http://github.com/zerious/lighter-load",
   "repository": "git://github.com/zerious/lighter-load.git",
   "author": "Sam Eubank <sameubank@gmail.com>",
@@ -33,6 +33,7 @@
   "devDependencies": {
     "assert-plus": "~0.1.5",
     "mocha": "~1.17.1",
-    "istanbul": "~0.2.6"
+    "istanbul": "~0.2.6",
+    "markdown": "^0.5.0"
   }
 }

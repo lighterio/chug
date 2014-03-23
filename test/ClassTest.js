@@ -1,4 +1,4 @@
-var api = require('../lighter-load');
+var api = require('../api');
 var Class = require('../lib/Class');
 var assert = require('assert-plus');
 

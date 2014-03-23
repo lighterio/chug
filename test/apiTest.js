@@ -1,5 +1,5 @@
 var assert = require('assert-plus');
-var api = require('../lighter-load');
+var api = require('../api');
 
 describe('API', function () {
 	before(function () {
@@ -7,10 +7,8 @@ describe('API', function () {
 		api.isReady = false;
 		api.onReadyQueue = [];
 	});
-	describe('load', function () {
-		it('should be an object', function () {
-			assert.func(api);
-		});
+	it('should be a function', function () {
+		assert.func(api);
 	});
 	describe('version', function () {
 		var packageVersion = require('../package.json').version;
@@ -66,6 +64,21 @@ describe('API', function () {
 			// Initial load is completed, so callbacks execute immediately.
 			api.onReady(callback);
 			assert.equal(calls, 3);
+		});
+	});
+	describe('compilers', function () {
+		it('should be an object', function () {
+			assert.object(api.compilers);
+		});
+	});
+	describe('addCompiler', function () {
+		it('should be a function', function () {
+			assert.func(api.addCompiler);
+		});
+	});
+	describe('minifiers', function () {
+		it('should be an object', function () {
+			assert.object(api.minifiers);
 		});
 	});
 });
