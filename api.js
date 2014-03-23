@@ -71,7 +71,6 @@ api.compilers = {
  * @param moduleName
  */
 api.addCompiler = function addCompiler(fileType, moduleName) {
-	moduleName = moduleName || fileType;
 	var compiler = false;
 	try {
 		compiler = require(moduleName);

@@ -35,8 +35,53 @@ describe('Asset', function () {
 	});
 	it('should not compile stuff that doesn\'t have a module', function() {
 		var asset = new Asset('hi.doesnotexist');
+		var errors = 0;
+		api.error = function error() {
+			errors++;
+		}
 		asset.setContent('hi');
 		asset.compile();
 		assert.equal(typeof asset.compiledContent, 'undefined');
+		assert.equal(errors, 1);
+	});
+	it('should compile if the module exports as a function', function() {
+		var asset = new Asset('hi.ltl');
+
+		// Change the ltl module.
+		var ltl = require('ltl');
+		var path = require.resolve('ltl');
+		require.cache[path].exports = function () {
+			return 'COMPILED';
+		};
+
+		// The compiled content shouldn't be saved if it isn't different.
+		asset.setContent('COMPILED');
+		asset.compile();
+		assert.equal(typeof asset.compiledContent, 'undefined');
+
+		// If it's different, it should save the compiled content.
+		asset.setContent('hi');
+		asset.compile();
+		assert.equal(asset.compiledContent, 'COMPILED');
+		require.cache[path].exports = ltl;
+	});
+	it('should throw if the module exports an unrecognized API', function() {
+		var asset = new Asset('hi.ltl');
+		var ltl = require('ltl');
+		var path = require.resolve('ltl');
+		require.cache[path].exports = {};
+		var errors = 0;
+		api.error = function error() {
+			errors++;
+		}
+		asset.compile();
+		assert.equal(errors, 1);
+		require.cache[path].exports = ltl;
+	});
+	it('should shrink and minify', function() {
+		var asset = new Asset('hi.ltl');
+		asset.shrink().minify().compile().setContent('. hi');
+		asset = new Asset('hi.ltl');
+		asset.minify();
 	});
 });

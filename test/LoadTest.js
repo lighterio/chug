@@ -112,4 +112,7 @@ describe('Load', function () {
 			})
 			.then(done);
 	});
+	it('should minify and shrink', function (done) {
+		load('test/views/hello.ltl').compile().minify().shrink().then(done);
+	});
 });
