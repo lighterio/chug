@@ -9,7 +9,7 @@
     "build",
     "loader"
   ],
-  "version": "0.0.1",
+  "version": "0.0.0",
   "main": "api.js",
   "homepage": "http://github.com/zerious/lighter-load",
   "repository": "git://github.com/zerious/lighter-load.git",
