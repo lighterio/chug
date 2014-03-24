@@ -66,7 +66,7 @@ api.compilers = {
 };
 
 /**
- * Add a compiler for a type of file, with an optional module name.
+ * Add a compiler for a type of file, specifying the module name.
  * @param fileType
  * @param moduleName
  */
@@ -89,5 +89,16 @@ api.minifiers = {
 	js: 'uglify-js',
 	coffee: 'uglify-js',
 	css: 'clean-css'
+};
+
+/**
+ * Add a minifier for a type of file, specifying the module name.
+ * @param fileType
+ * @param moduleName
+ */
+api.addMinifier = function addMinifier(fileType, moduleName) {
+	var minifier = require(moduleName);
+	api.minifiers[fileType] = minifier;
+	return minifier;
 };
 

@@ -14,12 +14,13 @@ describe('Asset', function () {
 	it('should compile and recompile ltl', function() {
 		var asset = new Asset('hi.ltl');
 		var output;
-		asset.compile();
+		asset.setContent('').compile();
 		output = asset.compiledContent();
 		assert.equal(output, '');
 		asset.setContent('. hi');
 		output = asset.compiledContent();
 		assert.equal(output, '<div>hi</div>');
+		delete api.compilers.ltl;
 	});
 	it('should not compile JavaScript', function() {
 		var asset = new Asset('hi.js');
@@ -64,6 +65,7 @@ describe('Asset', function () {
 		asset.compile();
 		assert.equal(asset.compiledContent, 'COMPILED');
 		require.cache[path].exports = ltl;
+		delete api.compilers.ltl;
 	});
 	it('should throw if the module exports an unrecognized API', function() {
 		var asset = new Asset('hi.ltl');
@@ -77,11 +79,36 @@ describe('Asset', function () {
 		asset.compile();
 		assert.equal(errors, 1);
 		require.cache[path].exports = ltl;
+		delete api.compilers.ltl;
 	});
-	it('should shrink and minify', function() {
+	it('should run shrink and minify', function() {
 		var asset = new Asset('hi.ltl');
+
+		// Shouldn't throw an error when we try to shrink/minify/compile before there's content.
 		asset.shrink().minify().compile().setContent('. hi');
-		asset = new Asset('hi.ltl');
-		asset.minify();
+
+		// Shouldn't recompile if the content hasn't changed.
+		var calls = 0;
+		asset.compile = function () {
+			calls++;
+		}
+		asset.setContent('. hi');
+		assert.equal(calls, 0);
+
+		delete api.compilers.ltl;
+	});
+	it('should compile, minify and shrink CoffeeScript', function() {
+		var asset = new Asset('hi.coffee');
+		asset.setContent('className = "_HIDDEN"').compile().minify().shrink();
+		asset.setContent('className = "_VISIBLE"');
+	});
+	it('should minify CSS', function() {
+		var asset = new Asset('hi.css');
+		asset.setContent('.hidden{display:none;}').minify();
+		assert.equal(/:/.test(asset.minifiedContent), true);
+		assert.equal(/;/.test(asset.minifiedContent), false);
+		asset.setContent('.hidden{display:none}').minify();
+		assert.equal(/:/.test(asset.minifiedContent), true);
+		assert.equal(/;/.test(asset.minifiedContent), false);
 	});
 });
