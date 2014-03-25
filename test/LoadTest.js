@@ -115,4 +115,22 @@ describe('Load', function () {
 	it('should minify and shrink', function (done) {
 		load('test/views/hello.ltl').compile().minify().shrink().then(done);
 	});
+	it('should concatenate scripts', function (done) {
+		load('test/scripts')
+			.concat()
+			.then(function () {
+				done();
+			});
+	});
+	it('should concatenate scripts with a name', function (done) {
+		var scripts = load('test/scripts');
+		scripts
+			.concat('/all.js')
+			.then(function () {
+				var first = scripts.assets[0];
+				var cached = load.cache['/all.js'];
+				assert.equal(first.content, cached.content);
+				done();
+			});
+	});
 });
