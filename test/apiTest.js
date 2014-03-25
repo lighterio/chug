@@ -17,19 +17,32 @@ describe('API', function () {
 			assert.equal(apiVersion, packageVersion);
 		});
 	});
-	describe('compilers', function () {
-		it('should be an object', function () {
-			assert.object(api.compilers);
-		});
-	});
 	describe('addCompiler', function () {
 		it('should be a function', function () {
 			assert.func(api.addCompiler);
 		});
+		it('should add a compiler', function () {
+			api.addCompiler('coffee', 'coffee-script');
+			assert.func(api._compilers.coffee.compile);
+		});
 	});
-	describe('minifiers', function () {
-		it('should be an object', function () {
-			assert.object(api.minifiers);
+	describe('addMinifier', function () {
+		it('should be a function', function () {
+			assert.func(api.addMinifier);
+		});
+		it('should add a minifier', function () {
+			api.addMinifier('js', 'uglify-js');
+			assert.func(api._minifiers.js.minify);
+		});
+	});
+	describe('setApp', function () {
+		var app = require('express')();
+		it('should be a function', function () {
+			assert.func(api.setApp);
+		});
+		it('should set the app', function () {
+			api.setApp(app);
+			assert.func(api._app.get);
 		});
 	});
 });

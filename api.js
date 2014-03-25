@@ -50,7 +50,7 @@ api.cache = {};
  *  - When api.compiler[fileType] === false, the content will not be compiled.
  *  - When typeof api.compiler[fileType] == 'string', we will require(api.compiler[fileType]).
  */
-api.compilers = {
+api._compilers = {
 	txt: false,
 	html: false,
 	htm: false,
@@ -78,14 +78,14 @@ api.addCompiler = function addCompiler(fileType, moduleName) {
 	catch (e) {
 		api.error('Could not load compiler: ' + moduleName);
 	}
-	api.compilers[fileType] = compiler;
+	api._compilers[fileType] = compiler;
 	return compiler;
 };
 
 /**
  * Some files don't need compilers, and some need alternate names.
  */
-api.minifiers = {
+api._minifiers = {
 	js: 'uglify-js',
 	coffee: 'uglify-js',
 	css: 'clean-css'
@@ -98,7 +98,22 @@ api.minifiers = {
  */
 api.addMinifier = function addMinifier(fileType, moduleName) {
 	var minifier = require(moduleName);
-	api.minifiers[fileType] = minifier;
+	api._minifiers[fileType] = minifier;
 	return minifier;
+};
+
+/**
+ * Express or similar app with app.get(path, callback) routing.
+ * @type {App}
+ */
+api._app = null;
+
+/**
+ * Add a minifier for a type of file, specifying the module name.
+ * @param fileType
+ * @param moduleName
+ */
+api.setApp = function setApp(app) {
+	api._app = app;
 };
 

@@ -20,7 +20,7 @@ describe('Asset', function () {
 		asset.setContent('. hi');
 		output = asset.compiledContent();
 		assert.equal(output, '<div>hi</div>');
-		delete api.compilers.ltl;
+		delete api._compilers.ltl;
 	});
 	it('should not compile JavaScript', function() {
 		var asset = new Asset('hi.js');
@@ -65,7 +65,7 @@ describe('Asset', function () {
 		asset.compile();
 		assert.equal(asset.compiledContent, 'COMPILED');
 		require.cache[path].exports = ltl;
-		delete api.compilers.ltl;
+		delete api._compilers.ltl;
 	});
 	it('should throw if the module exports an unrecognized API', function() {
 		var asset = new Asset('hi.ltl');
@@ -79,7 +79,7 @@ describe('Asset', function () {
 		asset.compile();
 		assert.equal(errors, 1);
 		require.cache[path].exports = ltl;
-		delete api.compilers.ltl;
+		delete api._compilers.ltl;
 	});
 	it('should run shrink and minify', function() {
 		var asset = new Asset('hi.ltl');
@@ -95,7 +95,7 @@ describe('Asset', function () {
 		asset.setContent('. hi');
 		assert.equal(calls, 0);
 
-		delete api.compilers.ltl;
+		delete api._compilers.ltl;
 	});
 	it('should compile, minify and shrink CoffeeScript', function() {
 		var asset = new Asset('hi.coffee');

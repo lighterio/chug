@@ -2,6 +2,10 @@ var load = require('../api');
 var assert = require('assert-plus');
 var fs = require('fs');
 
+var app = require('express')();
+app.listen(8999);
+load.setApp(app);
+
 var mockStat = function (path, callback) {
 	callback(null, {
 		dev: 16777219,
@@ -125,11 +129,47 @@ describe('Load', function () {
 	it('should concatenate scripts with a name', function (done) {
 		var scripts = load('test/scripts');
 		scripts
-			.concat('/all.js')
+			.concat('/core.js')
 			.then(function () {
 				var first = scripts.assets[0];
-				var cached = load.cache['/all.js'];
+				var cached = load.cache['/core.js'];
 				assert.equal(first.content, cached.content);
+				assert.equal(first.content.split('=').length, 4);
+				done();
+			});
+	});
+	it('should serve compiled CoffeeScript with Express', function (done) {
+		var http = require('http');
+		load('test/scripts')
+			.compile()
+			.concat('/core.js')
+			.route()
+			.then(function () {
+				http.get('http://127.0.0.1:8999/core.js', function (response) {
+					response.on('data', function (chunk) {
+						var data = '' + chunk;
+						assert.equal(/var a;/.test(data), true);
+						done();
+					});
+				});
+			});
+	});
+	it('should route ltl', function (done) {
+		load('test/views/hello.ltl')
+			.compile()
+			.route()
+			.then(done);
+	});
+	it('should not route until an app is set', function (done) {
+		load._app = null;
+		var errors = 0;
+		load.error = function () {
+			errors++;
+		}
+		load('test/scripts/b.js')
+			.route()
+			.then(function () {
+				assert.equal(errors, 1);
 				done();
 			});
 	});
