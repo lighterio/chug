@@ -127,8 +127,7 @@ describe('Load', function () {
 			});
 	});
 	it('should concatenate scripts with a name', function (done) {
-		var scripts = load('test/scripts');
-		scripts
+		var scripts = load('test/scripts')
 			.concat('/core.js')
 			.then(function () {
 				var first = scripts.assets[0];
