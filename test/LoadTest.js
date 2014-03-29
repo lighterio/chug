@@ -1,6 +1,7 @@
 var load = require('../api');
 var assert = require('assert-plus');
 var fs = require('fs');
+var http = require('http');
 
 var app = require('express')();
 app.listen(8999);
@@ -138,7 +139,6 @@ describe('Load', function () {
 			});
 	});
 	it('should serve compiled CoffeeScript with Express', function (done) {
-		var http = require('http');
 		load('test/scripts')
 			.compile()
 			.concat('/core.js')
@@ -154,10 +154,18 @@ describe('Load', function () {
 			});
 	});
 	it('should route ltl', function (done) {
-		load('test/views/hello.ltl')
+		load('test/views')
 			.compile()
 			.route()
-			.then(done);
+			.then(function () {
+				http.get('http://127.0.0.1:8999/views/hello', function (response) {
+					response.on('data', function (chunk) {
+						var data = '' + chunk;
+						assert.equal(/DOCTYPE/.test(data), true);
+						done();
+					});
+				});
+			});
 	});
 	it('should not route until an app is set', function (done) {
 		load._app = null;

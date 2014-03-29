@@ -22,8 +22,11 @@
     "node >= 0.2.6"
   ],
   "scripts": {
-    "test": "./node_modules/istanbul/lib/cli.js test ./node_modules/mocha/bin/_mocha",
-    "report": "open coverage/lcov-report/index.html"
+	  "test": "mocha",
+	  "retest": "mocha --watch",
+	  "cover": "istanbul cover _mocha",
+	  "report": "open coverage/lcov-report/index.html",
+	  "coveralls": "istanbul cover _mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
   },
   "dependencies": {
     "clean-css": "^2.1.6",

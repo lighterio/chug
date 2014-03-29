@@ -1,6 +1,7 @@
 var api = require('../api');
 var Asset = require('../lib/Asset');
 var assert = require('assert-plus');
+api.setApp(require('express')());
 
 describe('Asset', function () {
 	it('should should have a location', function () {
@@ -110,5 +111,10 @@ describe('Asset', function () {
 		asset.setContent('.hidden{display:none}').minify();
 		assert.equal(/:/.test(asset.minifiedContent), true);
 		assert.equal(/;/.test(asset.minifiedContent), false);
+	});
+	it('should auto route', function () {
+		var asset = new Asset('/auto.ltl');
+		asset.setContent('// AUTOROUTE\nhtml\n head>title Tick\n body Boom');
+		asset.compile();
 	});
 });

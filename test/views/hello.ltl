@@ -1,4 +1,4 @@
-use base/page
+call base/page
     set title
         Hello World!
     set content
