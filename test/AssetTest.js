@@ -1,7 +1,7 @@
-var api = require('../api');
+var chug = require('../chug');
 var Asset = require('../lib/Asset');
 var assert = require('assert-plus');
-api.setApp(require('express')());
+chug.setApp(require('express')());
 
 describe('Asset', function () {
 	it('should should have a location', function () {
@@ -21,7 +21,7 @@ describe('Asset', function () {
 		asset.setContent('. hi');
 		output = asset.compiledContent();
 		assert.equal(output, '<div>hi</div>');
-		delete api._compilers.ltl;
+		delete chug._compilers.ltl;
 	});
 	it('should not compile JavaScript', function() {
 		var asset = new Asset('hi.js');
@@ -38,7 +38,7 @@ describe('Asset', function () {
 	it('should not compile stuff that doesn\'t have a module', function() {
 		var asset = new Asset('hi.doesnotexist');
 		var errors = 0;
-		api.error = function error() {
+		chug.error = function error() {
 			errors++;
 		}
 		asset.setContent('hi');
@@ -66,7 +66,7 @@ describe('Asset', function () {
 		asset.compile();
 		assert.equal(asset.compiledContent, 'COMPILED');
 		require.cache[path].exports = ltl;
-		delete api._compilers.ltl;
+		delete chug._compilers.ltl;
 	});
 	it('should throw if the module exports an unrecognized API', function() {
 		var asset = new Asset('hi.ltl');
@@ -74,13 +74,13 @@ describe('Asset', function () {
 		var path = require.resolve('ltl');
 		require.cache[path].exports = {};
 		var errors = 0;
-		api.error = function error() {
+		chug.error = function error() {
 			errors++;
 		}
 		asset.compile();
 		assert.equal(errors, 1);
 		require.cache[path].exports = ltl;
-		delete api._compilers.ltl;
+		delete chug._compilers.ltl;
 	});
 	it('should run shrink and minify', function() {
 		var asset = new Asset('hi.ltl');
@@ -96,7 +96,7 @@ describe('Asset', function () {
 		asset.setContent('. hi');
 		assert.equal(calls, 0);
 
-		delete api._compilers.ltl;
+		delete chug._compilers.ltl;
 	});
 	it('should compile, minify and shrink CoffeeScript', function() {
 		var asset = new Asset('hi.coffee');

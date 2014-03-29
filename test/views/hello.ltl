@@ -1,5 +1,5 @@
 call base/page
-    set title
+    set title:
         Hello World!
-    set content
+    set content:
         This is a test.

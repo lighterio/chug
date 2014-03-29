@@ -1,3 +1,5 @@
 html
-    head>title>get title
-    body>get content
+    head>title
+        get title
+    body
+        get content

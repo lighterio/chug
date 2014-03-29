@@ -1,4 +1,4 @@
-var load = require('../api');
+var load = require('../chug');
 var assert = require('assert-plus');
 var fs = require('fs');
 var http = require('http');
@@ -112,8 +112,7 @@ describe('Load', function () {
 		load('test/views/hello.ltl')
 			.compile()
 			.each(function (view) {
-				var startsWithTag = /</.test(view.compiledContent);
-				assert.equal(startsWithTag, true);
+				assert.func(view.compiledContent);
 			})
 			.then(done);
 	});

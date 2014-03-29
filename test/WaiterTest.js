@@ -1,12 +1,12 @@
 var assert = require('assert-plus');
-var api = require('../api');
+var chug = require('../chug');
 var Waiter = require('../lib/Waiter');
 
 describe('Waiter', function () {
 	before(function () {
-		api.waitCount = 0;
-		api.isReady = false;
-		api.onReadyQueue = [];
+		chug.waitCount = 0;
+		chug.isReady = false;
+		chug.onReadyQueue = [];
 	});
 	describe('wait/unwait', function() {
 		it('should increment/decrement', function () {

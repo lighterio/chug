@@ -1,22 +1,14 @@
 {
-  "name": "lighter-load",
-  "description": "Lightweight incremental building loader",
-  "keywords": [
-    "lightweight",
-    "fast",
-    "simple",
-    "load",
-    "build",
-    "loader"
-  ],
+  "name": "chug",
+  "description": "The caching build system",
+  "keywords": ["cache", "caching", "build", "lightweight", "fast", "simple", "load", "build", "loader", "route", "router"],
   "version": "0.0.0",
   "main": "api.js",
   "homepage": "http://github.com/zerious/lighter-load",
   "repository": "git://github.com/zerious/lighter-load.git",
   "author": "Sam Eubank <sameubank@gmail.com>",
   "contributors": [
-    "Sam Eubank <sameubank@gmail.com>",
-    "Kaushik Shankar <skaushik92@gmail.com>"
+    "Sam Eubank <sameubank@gmail.com>"
   ],
   "engines": [
     "node >= 0.2.6"

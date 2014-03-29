@@ -1,4 +1,4 @@
-var api = require('../api');
+var chug = require('../chug');
 var File = require('../lib/File');
 var assert = require('assert-plus');
 

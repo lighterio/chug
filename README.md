@@ -1,4 +1,4 @@
-lighter-load
+chug
 ============
 
-Incremental reloader for developing Lighter apps.
+Chug is the caching build system.

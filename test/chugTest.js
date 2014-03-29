@@ -1,48 +1,48 @@
 var assert = require('assert-plus');
-var api = require('../api');
+var chug = require('../chug');
 
 describe('API', function () {
 	before(function () {
-		api.waitCount = 0;
-		api.isReady = false;
-		api.onReadyQueue = [];
+		chug.waitCount = 0;
+		chug.isReady = false;
+		chug.onReadyQueue = [];
 	});
 	it('should be a function', function () {
-		assert.func(api);
+		assert.func(chug);
 	});
 	describe('version', function () {
 		var packageVersion = require('../package.json').version;
 		it('should be ' + packageVersion, function () {
-			var apiVersion = api.version;
-			assert.equal(apiVersion, packageVersion);
+			var chugVersion = chug.version;
+			assert.equal(chugVersion, packageVersion);
 		});
 	});
 	describe('addCompiler', function () {
 		it('should be a function', function () {
-			assert.func(api.addCompiler);
+			assert.func(chug.addCompiler);
 		});
 		it('should add a compiler', function () {
-			api.addCompiler('coffee', 'coffee-script');
-			assert.func(api._compilers.coffee.compile);
+			chug.addCompiler('coffee', 'coffee-script');
+			assert.func(chug._compilers.coffee.compile);
 		});
 	});
 	describe('addMinifier', function () {
 		it('should be a function', function () {
-			assert.func(api.addMinifier);
+			assert.func(chug.addMinifier);
 		});
 		it('should add a minifier', function () {
-			api.addMinifier('js', 'uglify-js');
-			assert.func(api._minifiers.js.minify);
+			chug.addMinifier('js', 'uglify-js');
+			assert.func(chug._minifiers.js.minify);
 		});
 	});
 	describe('setApp', function () {
 		var app = require('express')();
 		it('should be a function', function () {
-			assert.func(api.setApp);
+			assert.func(chug.setApp);
 		});
 		it('should set the app', function () {
-			api.setApp(app);
-			assert.func(api._app.get);
+			chug.setApp(app);
+			assert.func(chug._app.get);
 		});
 	});
 });
