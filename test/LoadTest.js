@@ -1,11 +1,11 @@
-var load = require('../chug');
+var chug = require('../chug');
 var assert = require('assert-plus');
 var fs = require('fs');
 var http = require('http');
 
 var app = require('express')();
 app.listen(8999);
-load.setApp(app);
+chug.setApp(app);
 
 var mockStat = function (path, callback) {
 	callback(null, {
@@ -30,15 +30,15 @@ var mockStat = function (path, callback) {
 
 describe('Load', function () {
 	it('should load nothing if no path is passed', function () {
-		var empty = load();
+		var empty = chug();
 		assert.equal(empty.assets.length, 0);
 	});
 	it('should load views', function (done) {
-		var views = load('test/views');
+		var views = chug('test/views');
 		views.onReady(function () {
 			assert.equal(views.assets.length, 2);
 			var hasCachedItems;
-			for (location in load.cache) {
+			for (location in chug.cache) {
 				hasCachedItems = true;
 			}
 			assert.equal(hasCachedItems, true);
@@ -47,28 +47,28 @@ describe('Load', function () {
 	});
 	it('should log an error for an invalid location', function () {
 		var errors = 0;
-		load.error = function () {
+		chug.error = function () {
 			errors++;
 		}
-		load({});
+		chug({});
 		assert.equal(errors, 1);
 	});
 	it('should load views as an array', function (done) {
-		var views = load(['test/views/hello.ltl', 'test/views/base/page.ltl']);
+		var views = chug(['test/views/hello.ltl', 'test/views/base/page.ltl']);
 		views.onReady(function () {
 			assert.equal(views.assets.length, 2);
 			done();
 		});
 	});
 	it('should ignore a non-existent path', function () {
-		load('./test/non-existent-path');
+		chug('./test/non-existent-path');
 	});
 	it('should resolve a node_modules path', function () {
-		load('node_modules/mocha/mocha.css');
+		chug('node_modules/mocha/mocha.css');
 	});
 	it('should load an absolute path', function () {
 		var path = require.resolve('mocha');
-		load(path);
+		chug(path);
 	});
 	it('should skip . and .. "files"', function() {
 		var readdir = fs.readdir;
@@ -77,7 +77,7 @@ describe('Load', function () {
 		};
 		var stat = fs.stat;
 		fs.stat = mockStat;
-		var temp = load('test/nonexistent');
+		var temp = chug('test/nonexistent');
 		assert.equal(temp.assets.length, 1);
 		fs.readdir = readdir;
 		fs.stat = stat;
@@ -90,26 +90,31 @@ describe('Load', function () {
 		var stat = fs.stat;
 		fs.stat = mockStat;
 		var errors = 0;
-		load.error = function () {
+		chug.error = function () {
 			errors++;
 		}
-		load('test/nonexistent');
+		chug('test/nonexistent');
 		assert.equal(errors, 1);
 		fs.readdir = readdir;
 		fs.stat = stat;
 	});
 	it('should iterate over views', function (done) {
 		var count = 0;
-		load('test/views')
+		chug('test/views')
 			.each(function (view) {
 				assert.equal(view.content.length > 0, true);
-				if (++count == 2) {
-					done();
-				}
+				++count;
+			})
+			.watch()
+			.then(function () {
+				assert.equal(count, 2);
+				assert.equal(this.assets.length, 2);
+				assert.equal(this.watchables.length, 1);
+				done();
 			});
 	});
 	it('should compile views', function (done) {
-		load('test/views/hello.ltl')
+		chug('test/views/hello.ltl')
 			.compile()
 			.each(function (view) {
 				assert.func(view.compiledContent);
@@ -117,28 +122,28 @@ describe('Load', function () {
 			.then(done);
 	});
 	it('should minify and shrink', function (done) {
-		load('test/views/hello.ltl').compile().minify().shrink().then(done);
+		chug('test/views/hello.ltl').compile().minify().shrink().then(done);
 	});
 	it('should concatenate scripts', function (done) {
-		load('test/scripts')
+		chug('test/scripts')
 			.concat()
 			.then(function () {
 				done();
 			});
 	});
 	it('should concatenate scripts with a name', function (done) {
-		var scripts = load('test/scripts')
+		var scripts = chug('test/scripts')
 			.concat('/core.js')
 			.then(function () {
 				var first = scripts.assets[0];
-				var cached = load.cache['/core.js'];
+				var cached = chug.cache['/core.js'];
 				assert.equal(first.content, cached.content);
 				assert.equal(first.content.split('=').length, 4);
 				done();
 			});
 	});
 	it('should serve compiled CoffeeScript with Express', function (done) {
-		load('test/scripts')
+		chug('test/scripts')
 			.compile()
 			.concat('/core.js')
 			.route()
@@ -153,7 +158,7 @@ describe('Load', function () {
 			});
 	});
 	it('should route ltl', function (done) {
-		load('test/views')
+		chug('test/views')
 			.compile()
 			.route()
 			.then(function () {
@@ -167,12 +172,25 @@ describe('Load', function () {
 			});
 	});
 	it('should not route until an app is set', function (done) {
-		load._app = null;
+		chug._app = null;
 		var errors = 0;
-		load.error = function () {
+		chug.error = function () {
 			errors++;
 		}
-		load('test/scripts/b.js')
+		chug('test/scripts/b.js')
+			.route()
+			.then(function () {
+				assert.equal(errors, 1);
+				done();
+			});
+	});
+	it('should watch for changes', function (done) {
+		chug._app = null;
+		var errors = 0;
+		chug.error = function () {
+			errors++;
+		}
+		chug('test/scripts/b.js')
 			.route()
 			.then(function () {
 				assert.equal(errors, 1);
