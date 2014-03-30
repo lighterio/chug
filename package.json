@@ -3,7 +3,7 @@
   "description": "The caching build system",
   "keywords": ["cache", "caching", "build", "lightweight", "fast", "simple", "load", "build", "loader", "route", "router"],
   "version": "0.0.0",
-  "main": "api.js",
+  "main": "chug.js",
   "homepage": "http://github.com/zerious/lighter-load",
   "repository": "git://github.com/zerious/lighter-load.git",
   "author": "Sam Eubank <sameubank@gmail.com>",
@@ -22,14 +22,14 @@
   },
   "dependencies": {
     "clean-css": "^2.1.6",
-    "uglify-js": "^2.4.13",
-    "express": "^3.4.8"
+    "uglify-js": "^2.4.13"
   },
   "devDependencies": {
     "assert-plus": "~0.1.5",
     "mocha": "~1.17.1",
     "istanbul": "~0.2.6",
     "markdown": "^0.5.0",
-    "ltl": "0.0.1"
+    "ltl": "0.0.1",
+    "express": "^3.4.8"
   }
 }
