@@ -109,8 +109,18 @@ describe('Load', function () {
 			.then(function () {
 				assert.equal(count, 2);
 				assert.equal(this.assets.length, 2);
-				assert.equal(this.watchables.length, 1);
+				assert.equal(this.watchablePaths.length, 1);
+			})
+			// Watch for changes on the directory, and we'll get a change in a file.
+			.watch(function (event, filename, path) {
+				assert.equal(event, 'change');
+				assert.equal(filename, 'hello.ltl');
+				assert.equal(/^[\/]/.test(path), true);
 				done();
+			})
+			.then(function () {
+				var asset = this.assets[0];
+				fs.writeFile(asset.location, asset.content);
 			});
 	});
 	it('should compile views', function (done) {
