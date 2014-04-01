@@ -105,22 +105,11 @@ describe('Load', function () {
 				assert.equal(view.content.length > 0, true);
 				++count;
 			})
-			.watch()
 			.then(function () {
 				assert.equal(count, 2);
 				assert.equal(this.assets.length, 2);
 				assert.equal(this.watchablePaths.length, 1);
-			})
-			// Watch for changes on the directory, and we'll get a change in a file.
-			.watch(function (event, filename, path) {
-				assert.equal(event, 'change');
-				assert.equal(filename, 'hello.ltl');
-				assert.equal(/^[\/]/.test(path), true);
 				done();
-			})
-			.then(function () {
-				var asset = this.assets[0];
-				fs.writeFile(asset.location, asset.content);
 			});
 	});
 	it('should compile views', function (done) {
@@ -205,6 +194,58 @@ describe('Load', function () {
 			.then(function () {
 				assert.equal(errors, 1);
 				done();
+			});
+	});
+	it('should watch a directory', function (done) {
+		var expectCount = 0;
+		fs.mkdir('test/watch', function () {
+			var load = chug('test/watch')
+				.watch(function () {
+					assert.equal(load.assets.length, expectCount);
+					if (expectCount) {
+						expectCount = 0;
+						fs.unlink('test/watch/a.txt');
+					}
+					else {
+						fs.rmdir('test/watch', function () {
+							done();
+						});
+					}
+				})
+				.then(function () {
+					expectCount = 1;
+					fs.writeFile('test/watch/a.txt', 'A');
+				});
+		});
+	});
+	it('should watch views', function (done) {
+		var expectCount = 0;
+		var load = chug('test/views')
+			.watch(function () {
+				assert.equal(load.assets.length, expectCount);
+				if (expectCount == 3) {
+					expectCount = 2;
+					fs.unlink('test/views/boom.ltl');
+				}
+				else {
+					done();
+				}
+			})
+			.then(function () {
+				expectCount = 3;
+				fs.writeFile('test/views/boom.ltl', 'b boom');
+			});
+	});
+	it('should watch scripts', function (done) {
+		chug('test/scripts')
+			.watch()
+			.watch(function () {
+				assert.equal(this.assets.length, 3);
+				done();
+			})
+			.then(function () {
+				var asset = this.assets[0];
+				fs.writeFile(asset.location, asset.content);
 			});
 	});
 });
