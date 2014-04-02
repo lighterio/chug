@@ -220,6 +220,7 @@ describe('Load', function () {
 	});
 	it('should watch views', function (done) {
 		var expectCount = 0;
+		var concatCalled = false;
 		var load = chug('test/views')
 			.watch(function () {
 				assert.equal(load.assets.length, expectCount);
@@ -228,12 +229,19 @@ describe('Load', function () {
 					fs.unlink('test/views/boom.ltl');
 				}
 				else {
+					assert.equal(concatCalled, true);
 					done();
 				}
 			})
 			.then(function () {
 				expectCount = 3;
 				fs.writeFile('test/views/boom.ltl', 'b boom');
+			});
+		var concat = load.concat()
+			.then(function () {
+				concat.assets[0].setContent = function () {
+					concatCalled = true;
+				}
 			});
 	});
 	it('should watch scripts', function (done) {
