@@ -1,7 +1,19 @@
 {
   "name": "chug",
   "description": "The caching build system",
-  "keywords": ["cache", "caching", "build", "lightweight", "fast", "simple", "load", "build", "loader", "route", "router"],
+  "keywords": [
+    "cache",
+    "caching",
+    "build",
+    "lightweight",
+    "fast",
+    "simple",
+    "load",
+    "build",
+    "loader",
+    "route",
+    "router"
+  ],
   "version": "0.0.0",
   "main": "chug.js",
   "homepage": "http://github.com/zerious/chug",
@@ -14,11 +26,11 @@
     "node >= 0.2.6"
   ],
   "scripts": {
-	  "test": "mocha",
-	  "retest": "mocha --watch",
-	  "cover": "istanbul cover _mocha",
-	  "report": "open coverage/lcov-report/index.html",
-	  "coveralls": "istanbul cover _mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
+    "test": "mocha",
+    "retest": "mocha --watch",
+    "cover": "istanbul cover _mocha",
+    "report": "open coverage/lcov-report/index.html",
+    "coveralls": "istanbul cover _mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
   },
   "dependencies": {
     "clean-css": "^2.1.6",
@@ -30,6 +42,9 @@
     "istanbul": "~0.2.6",
     "markdown": "^0.5.0",
     "ltl": "0.0.1",
-    "express": "^3.4.8"
+    "express": "^3.4.8",
+    "less": "^1.7.0",
+    "node-sass": "^0.8.4",
+    "stylus": "^0.42.3"
   }
 }

@@ -62,7 +62,9 @@ api._compilers = {
 	png: false,
 	svg: false,
 	md: 'markdown',
-	coffee: 'coffee-script'
+	coffee: 'coffee-script',
+	scss: 'node-sass',
+	styl: 'stylus'
 };
 
 /**
@@ -88,7 +90,10 @@ api.addCompiler = function addCompiler(fileType, moduleName) {
 api._minifiers = {
 	js: 'uglify-js',
 	coffee: 'uglify-js',
-	css: 'clean-css'
+	css: 'clean-css',
+	less: 'clean-css',
+	scss: 'clean-css',
+	styl: 'clean-css'
 };
 
 /**

@@ -103,6 +103,21 @@ describe('Asset', function () {
 		asset.setContent('className = "_HIDDEN"').compile().minify().shrink();
 		asset.setContent('className = "_VISIBLE"');
 	});
+	it('should compile and minify less', function() {
+		var asset = new Asset('hi.less');
+		asset.setContent('.a { width: (1 + 1) }').compile().minify();
+		assert.equal(asset.minifiedContent, '.a{width:2}');
+	});
+	it('should compile and minify scss', function() {
+		var asset = new Asset('hi.scss');
+		asset.setContent('$white: #fff;\n.a{color: $white}').compile().minify();
+		assert.equal(asset.minifiedContent, '.a{color:#fff}');
+	});
+	it('should compile and minify stylus', function() {
+		var asset = new Asset('hi.styl');
+		asset.setContent('$white = #fff\n.a\n color $white').compile().minify();
+		assert.equal(asset.minifiedContent, '.a{color:#fff}');
+	});
 	it('should minify CSS', function() {
 		var asset = new Asset('hi.css');
 		asset.setContent('.hidden{display:none;}').minify();
