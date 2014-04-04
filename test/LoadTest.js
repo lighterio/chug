@@ -213,6 +213,7 @@ describe('Load', function () {
 					}
 				})
 				.then(function () {
+					this.replayableActions = [];
 					expectCount = 1;
 					fs.writeFile('test/watch/a.txt', 'A');
 				});
@@ -235,6 +236,7 @@ describe('Load', function () {
 			})
 			.then(function () {
 				expectCount = 3;
+				this.replayableActions = [];
 				fs.writeFile('test/views/boom.ltl', 'b boom');
 			});
 		var concat = load.concat()
@@ -252,8 +254,29 @@ describe('Load', function () {
 				done();
 			})
 			.then(function () {
+				this.replayableActions = [];
 				var asset = this.assets[0];
 				fs.writeFile(asset.location, asset.content);
 			});
+	});
+	it('should ignore JetBrains backup files', function (done) {
+		fs.mkdir('test/empty', function () {
+			var called = false;
+			chug('test/empty')
+				.watch(function () {
+					called = true;
+				})
+				.then(function () {
+					fs.watch('test/empty', function () {
+							fs.unlink('test/empty/___bak__', function () {
+								assert.equal(called, false);
+								fs.rmdir('test/empty', function () {
+									done();
+								});
+							});
+					})
+					fs.writeFile('test/empty/___bak___', 'TEST');
+				});
+		})
 	});
 });
