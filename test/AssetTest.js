@@ -18,7 +18,7 @@ describe('Asset', function () {
 		asset.setContent('').compile();
 		output = asset.compiledContent();
 		assert.equal(output, '');
-		asset.setContent('. hi');
+		asset.setContent('. hi').compile();
 		output = asset.compiledContent();
 		assert.equal(output, '<div>hi</div>');
 		delete chug._compilers.ltl;
