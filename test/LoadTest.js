@@ -183,19 +183,6 @@ describe('Load', function () {
 				done();
 			});
 	});
-	it('should watch for changes', function (done) {
-		chug._app = null;
-		var errors = 0;
-		chug.error = function () {
-			errors++;
-		}
-		chug('test/scripts/b.js')
-			.route()
-			.then(function () {
-				assert.equal(errors, 1);
-				done();
-			});
-	});
 	it('should watch a directory', function (done) {
 		var expectCount = 0;
 		fs.mkdir('test/watch', function () {
@@ -220,31 +207,23 @@ describe('Load', function () {
 		});
 	});
 	it('should watch views', function (done) {
-		var expectCount = 0;
-		var concatCalled = false;
-		var load = chug('test/views')
-			.watch(function () {
-				assert.equal(load.assets.length, expectCount);
-				if (expectCount == 3) {
-					expectCount = 2;
-					fs.unlink('test/views/boom.ltl');
-				}
-				else {
-					assert.equal(concatCalled, true);
+		var concatCalls = 0;
+		var load = chug('test/views');
+		var concat = load.concat().then(function () {
+			concat.assets[0].setContent = function () {
+				if (++concatCalls == 2) {
+					load.replayableActions = [];
+					concat.replayableActions = [];
 					done();
 				}
-			})
-			.then(function () {
-				expectCount = 3;
-				this.replayableActions = [];
-				fs.writeFile('test/views/boom.ltl', 'b boom');
-			});
-		var concat = load.concat()
-			.then(function () {
-				concat.assets[0].setContent = function () {
-					concatCalled = true;
-				}
-			});
+			}
+		});
+		load.watch(function () {
+			fs.unlink('test/views/boom.ltl', function () {});
+		});
+		load.then(function () {
+			fs.writeFile('test/views/boom.ltl', 'b boom', function () {});
+		});
 	});
 	it('should watch scripts', function (done) {
 		chug('test/scripts')
@@ -278,5 +257,16 @@ describe('Load', function () {
 					fs.writeFile('test/empty/___bak___', 'TEST');
 				});
 		})
+	});
+	it('should watch a single file', function (done) {
+		var load = chug('test/scripts/b.js');
+		load
+			.minify()
+			.watch()
+			.onReady(function () {
+				fs.writeFile('test/scripts/b.js', 'var b = 2;', function () {
+					done();
+				});
+			});
 	});
 });
