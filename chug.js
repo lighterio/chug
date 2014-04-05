@@ -85,15 +85,24 @@ api.addCompiler = function addCompiler(fileType, moduleName) {
 };
 
 /**
- * Some files don't need compilers, and some need alternate names.
+ * JavaScript and CSS can be minified.
  */
 api._minifiers = {
 	js: 'uglify-js',
-	coffee: 'uglify-js',
-	css: 'clean-css',
-	less: 'clean-css',
-	scss: 'clean-css',
-	styl: 'clean-css'
+	css: 'clean-css'
+};
+
+/**
+ * Several languages compile to JavaScript or CSS.
+ */
+api._targetLanguages = {
+	ts: 'js',
+	coffee: 'js',
+	iced: 'js',
+	litcoffee: 'js',
+	less: 'css',
+	scss: 'css',
+	styl: 'css'
 };
 
 /**

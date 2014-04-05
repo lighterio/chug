@@ -2,6 +2,7 @@ var chug = require('../chug');
 var assert = require('assert-plus');
 var fs = require('fs');
 var http = require('http');
+var Asset = require('../lib/Asset');
 
 var app = require('express')();
 app.listen(8999);
@@ -226,11 +227,15 @@ describe('Load', function () {
 		});
 	});
 	it('should watch scripts', function (done) {
+		var isDone = false;
 		chug('test/scripts')
 			.watch()
 			.watch(function () {
 				assert.equal(this.assets.length, 3);
-				done();
+				if (!isDone) {
+					isDone = true;
+					done();
+				}
 			})
 			.then(function () {
 				this.replayableActions = [];
@@ -268,5 +273,21 @@ describe('Load', function () {
 					done();
 				});
 			});
+	});
+	it('should wrap js but not css', function (done) {
+		var load = chug();
+		var js = load.addAsset(Asset, 'test.js');
+		js.setContent('var a = 1;');
+		var styl = load.addAsset(Asset, 'test.styl');
+		styl.setContent('body\n color #fff');
+		load
+			.wait()
+			.wrap()
+			.compile()
+			.wrap()
+			.then(function () {
+				done();
+			})
+			.unwait();
 	});
 });
