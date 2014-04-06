@@ -45,6 +45,7 @@
     "express": "^3.4.8",
     "less": "^1.7.0",
     "node-sass": "^0.8.4",
-    "stylus": "^0.42.3"
+    "stylus": "^0.42.3",
+    "typescript.api": "^0.7.7"
   }
 }

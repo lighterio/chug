@@ -62,6 +62,7 @@ api._compilers = {
 	png: false,
 	svg: false,
 	md: 'markdown',
+	ts: 'typescript.api',
 	coffee: 'coffee-script',
 	scss: 'node-sass',
 	styl: 'stylus'
