@@ -4,6 +4,7 @@ var Waiter = require('./lib/Waiter');
 var Asset = require('./lib/Asset');
 var File = require('./lib/File');
 var Load = require('./lib/Load');
+var Cache = require('./lib/Cache');
 
 /**
  * Expose a function that creates a new "Load" of files.
@@ -41,7 +42,10 @@ api.error = console.error;
 /**
  * Cache all assets so each one only needs to be loaded once.
  */
-api.cache = {};
+api.cache = new Cache();
+api.onReady(function () {
+	api.cache.write();
+});
 
 /**
  * By default, we'll look up compilers at compile time.
@@ -94,9 +98,14 @@ api._minifiers = {
 };
 
 /**
- * Several languages compile to JavaScript or CSS.
+ * Several languages compile to HTML, JavaScript or CSS.
  */
 api._targetLanguages = {
+	ltl: 'html',
+	jade: 'html',
+	haml: 'html',
+	md: 'html',
+	markdown: 'html',
 	ts: 'js',
 	coffee: 'js',
 	iced: 'js',
@@ -131,4 +140,3 @@ api._app = null;
 api.setApp = function setApp(app) {
 	api._app = app;
 };
-

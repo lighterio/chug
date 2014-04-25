@@ -5,7 +5,7 @@ describe('API', function () {
 	before(function () {
 		chug.waitCount = 0;
 		chug.isReady = false;
-		chug.onReadyQueue = [];
+		chug.onceReadyQueue = [];
 	});
 	it('should be a function', function () {
 		assert.func(chug);

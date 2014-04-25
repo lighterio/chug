@@ -36,10 +36,10 @@ describe('Load', function () {
 	});
 	it('should load views', function (done) {
 		var views = chug('test/views');
-		views.onReady(function () {
+		views.onceReady(function () {
 			assert.equal(views.assets.length, 2);
 			var hasCachedItems;
-			for (location in chug.cache) {
+			for (location in chug.cache._cache) {
 				hasCachedItems = true;
 			}
 			assert.equal(hasCachedItems, true);
@@ -56,7 +56,7 @@ describe('Load', function () {
 	});
 	it('should load views as an array', function (done) {
 		var views = chug(['test/views/hello.ltl', 'test/views/base/page.ltl']);
-		views.onReady(function () {
+		views.onceReady(function () {
 			assert.equal(views.assets.length, 2);
 			done();
 		});
@@ -136,7 +136,7 @@ describe('Load', function () {
 			.concat('/core.js')
 			.then(function () {
 				var first = scripts.assets[0];
-				var cached = chug.cache['/core.js'];
+				var cached = chug.cache.get('/core.js');
 				assert.equal(first.content, cached.content);
 				assert.equal(first.content.split('=').length, 4);
 				done();
@@ -268,7 +268,7 @@ describe('Load', function () {
 		load
 			.minify()
 			.watch()
-			.onReady(function () {
+			.onceReady(function () {
 				fs.writeFile('test/scripts/b.js', 'var b = 2;', function () {
 					done();
 				});
