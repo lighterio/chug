@@ -132,4 +132,11 @@ describe('Asset', function () {
 		asset.setContent('// AUTOROUTE\nhtml\n head>title Tick\n body Boom');
 		asset.compile();
 	});
+	it('should auto route with a context', function () {
+		var asset = new Asset('/auto.ltl');
+		asset.setContent('// AUTOROUTE {"boom": "BOOM!"}\nhtml\n head>title Tick\n body ${boom}');
+		asset.compile();
+		assert.equal(asset.context.boom, 'BOOM!');
+
+	});
 });
