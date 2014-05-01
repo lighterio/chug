@@ -1,6 +1,8 @@
 var assert = require('assert-plus');
 var chug = require('../chug');
 
+require('zeriousify').test();
+
 describe('API', function () {
 	before(function () {
 		chug.waitCount = 0;
@@ -17,21 +19,21 @@ describe('API', function () {
 			assert.equal(chugVersion, packageVersion);
 		});
 	});
-	describe('addCompiler', function () {
+	describe('setCompiler', function () {
 		it('should be a function', function () {
-			assert.func(chug.addCompiler);
+			assert.func(chug.setCompiler);
 		});
-		it('should add a compiler', function () {
-			chug.addCompiler('coffee', 'coffee-script');
+		it('should set a compiler', function () {
+			chug.setCompiler('coffee', 'coffee-script');
 			assert.func(chug._compilers.coffee.compile);
 		});
 	});
-	describe('addMinifier', function () {
+	describe('setMinifier', function () {
 		it('should be a function', function () {
-			assert.func(chug.addMinifier);
+			assert.func(chug.setMinifier);
 		});
-		it('should add a minifier', function () {
-			chug.addMinifier('js', 'uglify-js');
+		it('should set a minifier', function () {
+			chug.setMinifier('js', 'uglify-js');
 			assert.func(chug._minifiers.js.minify);
 		});
 	});

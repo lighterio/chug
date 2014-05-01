@@ -46,6 +46,11 @@
     "less": "^1.7.0",
     "node-sass": "^0.8.4",
     "stylus": "^0.42.3",
-    "typescript.api": "^0.7.7"
-  }
+    "typescript.api": "^0.7.7",
+    "zeriousify": "~0.0.1"
+  },
+  "bugs": {
+    "url": "http://github.com/zerious/chug/issues"
+  },
+  "license": "MIT"
 }

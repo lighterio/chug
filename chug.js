@@ -20,6 +20,10 @@ var api = module.exports = function load(location) {
  */
 var waiter = new Waiter();
 for (var property in waiter) {
+	Object.defineProperty(api, property, {
+		enumerable: false,
+		writable: true
+	});
 	api[property] = waiter[property];
 }
 
@@ -30,14 +34,14 @@ for (var property in waiter) {
 api.version = require('./package.json').version;
 
 /**
- * Allow module users to decide which paths don't get walked.
+ * Don't walk upward.
  */
-api.ignorePattern = /^(\.+)$/;
+api._ignorePattern = /^(\.+)$/;
 
 /**
- * Allow module users to decide what happens with errors.
+ * When there's an error, just log it.
  */
-api.error = console.error;
+api._error = console.error;
 
 /**
  * Cache all assets so each one only needs to be loaded once.
@@ -46,6 +50,21 @@ api.cache = new Cache();
 api.onReady(function () {
 	api.cache.write();
 });
+
+/**
+ * Express or similar app with app.get(path, callback) routing.
+ * @type {App}
+ */
+api._app = null;
+
+/**
+ * Add a minifier for a type of file, specifying the module name.
+ * @param fileType
+ * @param moduleName
+ */
+api.setApp = function setApp(app) {
+	api._app = app;
+};
 
 /**
  * By default, we'll look up compilers at compile time.
@@ -73,19 +92,19 @@ api._compilers = {
 };
 
 /**
- * Add a compiler for a type of file, specifying the module name.
- * @param fileType
+ * Set the compiler for a type of file, specifying the module name.
+ * @param fileExtension
  * @param moduleName
  */
-api.addCompiler = function addCompiler(fileType, moduleName) {
+api.setCompiler = function setCompiler(fileExtension, moduleName) {
 	var compiler = false;
 	try {
 		compiler = require(moduleName);
 	}
 	catch (e) {
-		api.error('Could not load compiler: ' + moduleName);
+		api._error('Could not load compiler: ' + moduleName);
 	}
-	api._compilers[fileType] = compiler;
+	api._compilers[fileExtension] = compiler;
 	return compiler;
 };
 
@@ -93,7 +112,7 @@ api.addCompiler = function addCompiler(fileType, moduleName) {
  * JavaScript and CSS can be minified.
  */
 api._minifiers = {
-	js: 'uglify-js',
+	javascript: 'uglify-js',
 	css: 'clean-css'
 };
 
@@ -106,37 +125,22 @@ api._targetLanguages = {
 	haml: 'html',
 	md: 'html',
 	markdown: 'html',
-	ts: 'js',
-	coffee: 'js',
-	iced: 'js',
-	litcoffee: 'js',
+	ts: 'javascript',
+	coffee: 'javascript',
+	iced: 'javascript',
+	litcoffee: 'javascript',
 	less: 'css',
 	scss: 'css',
 	styl: 'css'
 };
 
 /**
- * Add a minifier for a type of file, specifying the module name.
- * @param fileType
+ * Set the minifier for a type of file, specifying the module name.
+ * @param language
  * @param moduleName
  */
-api.addMinifier = function addMinifier(fileType, moduleName) {
+api.setMinifier = function setMinifier(language, moduleName) {
 	var minifier = require(moduleName);
-	api._minifiers[fileType] = minifier;
+	api._minifiers[language] = minifier;
 	return minifier;
-};
-
-/**
- * Express or similar app with app.get(path, callback) routing.
- * @type {App}
- */
-api._app = null;
-
-/**
- * Add a minifier for a type of file, specifying the module name.
- * @param fileType
- * @param moduleName
- */
-api.setApp = function setApp(app) {
-	api._app = app;
 };
