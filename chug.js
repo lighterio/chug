@@ -34,9 +34,9 @@ for (var property in waiter) {
 api.version = require('./package.json').version;
 
 /**
- * Don't walk upward.
+ * Don't walk upward, and ignore DS_Store.
  */
-api._ignorePattern = /^(\.+)$/;
+api._ignorePattern = /^(\.+)(|DS_Store|gitignore)$/;
 
 /**
  * When there's an error, just log it.

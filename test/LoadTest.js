@@ -39,7 +39,7 @@ describe('Load', function () {
 		views.onceReady(function () {
 			assert.equal(views.assets.length, 2);
 			var hasCachedItems;
-			for (location in chug.cache._cache) {
+			for (location in chug.cache._store) {
 				hasCachedItems = true;
 			}
 			assert.equal(hasCachedItems, true);
