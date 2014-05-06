@@ -58,12 +58,12 @@ api.onReady(function () {
 api._app = null;
 
 /**
- * Add a minifier for a type of file, specifying the module name.
- * @param fileType
- * @param moduleName
+ * Set the Express-like app that will be used for routing.
+ * @param app
  */
 api.setApp = function setApp(app) {
 	api._app = app;
+	app._revisionTag = Math.round((new Date()).getTime() / 1000);
 };
 
 /**

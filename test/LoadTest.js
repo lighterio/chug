@@ -159,7 +159,14 @@ describe('Load', function () {
 					response.on('data', function (chunk) {
 						var data = '' + chunk;
 						assert.equal(/var a;/.test(data), true);
-						done();
+						http.get('http://127.0.0.1:8999/core.1234.js', function (response) {
+							response.on('data', function (chunk) {
+								var data = '' + chunk;
+								assert.equal(/var a;/.test(data), true);
+								assert.equal(!!response.headers.expires, true);
+								done();
+							});
+						});
 					});
 				});
 			});
