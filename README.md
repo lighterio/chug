@@ -120,6 +120,7 @@ extension, you can call `setCompiler` first.
 // This will use require('marked') to compile .md
 chug.setCompiler('md', 'marked');
 chug('README.md').compile();
+```
 
 ### setMinifier(string language, string moduleName)
 
