@@ -112,8 +112,8 @@ api.setCompiler = function setCompiler(fileExtension, moduleName) {
  * JavaScript and CSS can be minified.
  */
 api._minifiers = {
-	javascript: 'uglify-js',
-	css: 'clean-css'
+	js: 'uglify-js',
+	css: 'csso'
 };
 
 /**
@@ -125,10 +125,10 @@ api._targetLanguages = {
 	haml: 'html',
 	md: 'html',
 	markdown: 'html',
-	ts: 'javascript',
-	coffee: 'javascript',
-	iced: 'javascript',
-	litcoffee: 'javascript',
+	ts: 'js',
+	coffee: 'js',
+	iced: 'js',
+	litcoffee: 'js',
 	less: 'css',
 	scss: 'css',
 	styl: 'css'
@@ -143,4 +143,19 @@ api.setMinifier = function setMinifier(language, moduleName) {
 	var minifier = require(moduleName);
 	api._minifiers[language] = minifier;
 	return minifier;
+};
+
+/**
+ * The shrinker replaces names like _NAME with shorter names.
+ */
+api._shrinker;
+
+/**
+ * Enable the shrinker.
+ */
+api.enableShrinking = function() {
+	api._shrinker = require('./lib/shrinker');
+	api.cache.each(function (asset) {
+		asset.minify();
+	});
 };

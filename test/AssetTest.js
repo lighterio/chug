@@ -82,11 +82,11 @@ describe('Asset', function () {
 		require.cache[path].exports = ltl;
 		delete chug._compilers.ltl;
 	});
-	it('should run shrink and minify', function() {
+	it('should minify', function() {
 		var asset = new Asset('hi.ltl');
 
-		// Shouldn't throw an error when we try to shrink/minify/compile before there's content.
-		asset.shrink().minify().compile().setContent('. hi');
+		// Shouldn't throw an error when we try to minify/compile before there's content.
+		asset.minify().compile().setContent('. hi');
 
 		// Shouldn't recompile if the content hasn't changed.
 		var calls = 0;
@@ -98,9 +98,9 @@ describe('Asset', function () {
 
 		delete chug._compilers.ltl;
 	});
-	it('should compile, minify and shrink CoffeeScript', function() {
+	it('should compile and minify CoffeeScript', function() {
 		var asset = new Asset('hi.coffee');
-		asset.setContent('className = "_HIDDEN"').compile().minify().shrink();
+		asset.setContent('className = "_HIDDEN"').compile().minify();
 		asset.setContent('className = "_VISIBLE"');
 	});
 	it('should compile and minify less', function() {
@@ -126,6 +126,10 @@ describe('Asset', function () {
 		asset.setContent('.hidden{display:none}').minify();
 		assert.equal(/:/.test(asset.minifiedContent), true);
 		assert.equal(/;/.test(asset.minifiedContent), false);
+		chug.setMinifier('css', 'clean-css');
+		asset.setContent('.hidden{display:none;}').minify();
+		assert.equal(/;/.test(asset.minifiedContent), false);
+		chug.setMinifier('css', 'csso');
 	});
 	it('should auto route', function () {
 		var asset = new Asset('/auto.ltl');
@@ -137,6 +141,49 @@ describe('Asset', function () {
 		asset.setContent('// AUTOROUTE {"boom": "BOOM!"}\nhtml\n head>title Tick\n body ${boom}');
 		asset.compile();
 		assert.equal(asset.context.boom, 'BOOM!');
-
+	});
+	it('should get content', function(done) {
+		function verifyContents(asset, expected) {
+			var concat = asset.getContent()
+				+ asset.getCompiledContent()
+				+ asset.getMinifiedContent();
+			concat = concat.replace(/# NOWRAP\n/g, '');
+		}
+		chug._shrinker.tokens = [];
+		chug('test/scripts/c.coffee')
+			.each(function (asset) {
+				verifyContents(asset, "c = '_CC'c = '_CC'c = '_CC'");
+			})
+			.compile()
+			.each(function (asset) {
+				verifyContents(asset, "c = '_CC'var c;\n\n  c = '_CC';var c;\n\n  c = '_CC';var c;");
+			})
+			.minify()
+			.each(function (asset) {
+				verifyContents(asset, "c = '_CC'var c;\n\n  c = '_CC';var c;c=\"_CC\";");
+			})
+			.then(done);
+	});
+	it('should generate tokens longer than one character', function () {
+		chug.enableShrinking();
+		chug._shrinker.reset();
+		chug._shrinker.replacementCharacters = 'ab';
+		var shrunken = chug._shrinker.shrink('_AA _BB _CC _DD _EE _FF _GG _AA');
+		assert.equal(shrunken, 'a b aa ab ba bb aaa a');
+		chug._shrinker = null;
+	});
+	it('should shrink an anonymous function', function () {
+		chug.enableShrinking();
+		chug._shrinker.reset();
+		chug._compilers.temp = function (c) {
+			return function () {
+				return '_TEMP';
+			};
+		};
+		var anon = new Asset('test.temp');
+		anon.setContent('_TEMP').compile().minify();
+		assert.equal(/'a'/.test(anon.getMinifiedContent().toString()), true);
+		chug._shrinker = null;
+		delete chug._compilers.temp;
 	});
 });

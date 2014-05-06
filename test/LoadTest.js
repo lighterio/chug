@@ -3,10 +3,12 @@ var assert = require('assert-plus');
 var fs = require('fs');
 var http = require('http');
 var Asset = require('../lib/Asset');
+var exec = require('child_process').exec;
 
 var app = require('express')();
 app.listen(8999);
 chug.setApp(app);
+chug.enableShrinking();
 
 var mockStat = function (path, callback) {
 	callback(null, {
@@ -38,10 +40,15 @@ describe('Load', function () {
 		var views = chug('test/views');
 		views.onceReady(function () {
 			assert.equal(views.assets.length, 2);
-			var hasCachedItems;
-			for (location in chug.cache._store) {
+			var hasCachedItems = false;
+
+			// Pollute Object so we'll touch hasOwnProperty code paths.
+			Object.prototype.polluted = true;
+			chug.cache.each(function () {
 				hasCachedItems = true;
-			}
+			});
+			delete Object.prototype.polluted;
+
 			assert.equal(hasCachedItems, true);
 			done();
 		});
@@ -121,8 +128,8 @@ describe('Load', function () {
 			})
 			.then(done);
 	});
-	it('should minify and shrink', function (done) {
-		chug('test/views/hello.ltl').compile().minify().shrink().then(done);
+	it('should compile and minify', function (done) {
+		chug('test/views/hello.ltl').compile().minify().then(done);
 	});
 	it('should concatenate scripts', function (done) {
 		chug('test/scripts')
@@ -158,10 +165,13 @@ describe('Load', function () {
 			});
 	});
 	it('should route ltl', function (done) {
+		chug.enableShrinking();
 		chug('test/views')
 			.compile()
+			.minify()
 			.route()
 			.then(function () {
+				chug._shrinker = null;
 				http.get('http://127.0.0.1:8999/views/hello', function (response) {
 					response.on('data', function (chunk) {
 						var data = '' + chunk;
@@ -289,5 +299,16 @@ describe('Load', function () {
 				done();
 			})
 			.unwait();
+	});
+	it('should write', function (done) {
+		chug('test/scripts/b.js')
+			.minify()
+			.write()
+			.write('build')
+			.write('build', 'b.js')
+			.write('build', 'b.min.js', 'minified')
+			.then(function () {
+				done();
+			});
 	});
 });

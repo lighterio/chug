@@ -20,8 +20,15 @@ describe('File', function () {
 	it('should load an icon without converting to string', function (done) {
 		var icon = new File('test/icons/chug.ico');
 		icon.onceReady(function () {
+			chug.enableShrinking();
 			assert.equal(typeof icon.content, 'object');
-			done();
+
+			// Shouldn't compile, shrink or minify.
+			icon.compile().minify().onceReady(function () {
+				assert.equal(icon.getMinifiedContent(), icon.content);
+				chug._shrinker = null;
+				done();
+			});
 		});
 	});
 });
