@@ -371,6 +371,9 @@ describe('Load', function () {
 			.require()
 			.then(function () {
 				assert.equal(marco, 'polo');
+			})
+			.require(function (module) {
+				assert.equal(module.name, 'marco');
 				done();
 			});
 	});
