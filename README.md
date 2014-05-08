@@ -10,6 +10,13 @@ Chug is a caching build system. It compiles, minifies, and caches your
 project's assets so they can be served directly from cache, eliminating
 the unnecessary step of saving your files to a build directory.
 
+## Installation
+
+In your project directory, run:
+```bash
+npm i --save chug
+```
+
 ## Getting Started
 
 Chug is a function with chaining methods, and you can use it inside your Node
