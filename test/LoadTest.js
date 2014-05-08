@@ -204,7 +204,8 @@ describe('Load', function () {
 	it('should watch a directory', function (done) {
 		var expectCount = 0;
 		var isDone = false;
-		fs.mkdir('test/watch', function () {
+		var isWritten = false;
+		fs.mkdir('test/watch', function (err) {
 			var load = chug('test/watch')
 				.watch(function () {
 					assert.equal(load.assets.length, expectCount);
@@ -224,7 +225,10 @@ describe('Load', function () {
 				.then(function () {
 					this.replayableActions = [];
 					expectCount = 1;
-					fs.writeFile('test/watch/a.txt', 'A');
+					if (!isWritten) {
+						isWritten = true;
+						fs.writeFile('test/watch/a.txt', 'A');
+					}
 				});
 		});
 	});
@@ -265,6 +269,7 @@ describe('Load', function () {
 			});
 	});
 	it('should ignore JetBrains backup files', function (done) {
+		var isDone = false;
 		fs.mkdir('test/empty', function () {
 			var called = false;
 			chug('test/empty')
@@ -276,7 +281,10 @@ describe('Load', function () {
 							fs.unlink('test/empty/___bak__', function () {
 								assert.equal(called, false);
 								fs.rmdir('test/empty', function () {
-									done();
+									if (!isDone) {
+										isDone = true;
+										done();
+									}
 								});
 							});
 					})
