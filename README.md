@@ -102,6 +102,15 @@ argument can be null or "compiled" or "minified", and it
 specifies which version of the content should be written
 to file.
 
+### .getLocations()
+`getLocations` returns an array of the locations of the assets
+in the load.
+
+### .getTags([string path])
+`getTags` returns a string of HTML, containing script tags and
+link tags for any JS and CSS assets in the load. The optional
+path argument prepends a path to the location of those assets.
+
 ## API
 
 The chug function is also an object with several methods.

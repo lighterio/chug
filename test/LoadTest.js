@@ -318,4 +318,44 @@ describe('Load', function () {
 				done();
 			});
 	});
+	it('should return locations', function (done) {
+		var scripts = chug('test/scripts')
+			.getLocations(function (locations) {
+				assert.equal(locations.length, 3);
+			})
+			.then(function () {
+				assert.equal(scripts.getLocations().length, 3);
+				done();
+			});
+		assert.equal(scripts.getLocations().length, 0);
+	});
+	it('should return tags', function (done) {
+		var load = chug([
+			'test/scripts/a.coffee',
+			'test/scripts/b.js',
+			'test/styles/a.css',
+			'test/styles/b.styl',
+			'test/views/hello.ltl'])
+			.getTags(function (tags) {
+				verify(tags, '');
+			})
+			.then(function () {
+				verify(load.getTags(), '');
+				verify(load.getTags('blah'), 'blah');
+				load.assets.forEach(function (asset) {
+					asset.location = asset.location.replace(/.*\//, '');
+				})
+				var html = load.getTags();
+				assert.equal(html.indexOf('src="a.js"') > -1, true);
+				done();
+			});
+		function verify(html, path) {
+			assert.equal(html.indexOf('<script src="' + path + '/test/scripts/a.js"></script>') > -1, true);
+			assert.equal(html.indexOf('<script src="' + path + '/test/scripts/b.js"></script>') > -1, true);
+			assert.equal(html.indexOf('<link rel="stylesheet" href="' + path + '/test/styles/a.css">') > -1, true);
+			assert.equal(html.indexOf('<link rel="stylesheet" href="' + path + '/test/styles/b.css">') > -1, true);
+			assert.equal(html.length, 182 + path.length * 4);
+		}
+		assert.equal(load.getTags(), '');
+	});
 });
