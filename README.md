@@ -54,10 +54,10 @@ When you chug an array, it recursively chugs each element of the array into
 the load. This happens asynchronously, so module order is not guaranteed.
 
 ### chug(string)
-When you chug a string, it resolves to the file system. If the string begins
-with `node_modules/`, chug resolves the path as Node.js `require` would.
-Otherwise, chug loads the path if it is a file or recursively chugs its
-contents if it is a directory.
+When you chug a string, it resolves to the file system. If the string does
+not begin with a slash, chug prepends the current working directory. Chug
+loads the path if it is a file or recursively chugs its contents if it is a
+directory.
 
 ## Load
 
