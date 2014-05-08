@@ -80,6 +80,7 @@ api._compilers = {
 	js: false,
 	css: false,
 	gif: false,
+	ico: false,
 	jpg: false,
 	jpeg: false,
 	png: false,
