@@ -202,18 +202,18 @@ describe('Load', function () {
 			});
 	});
 	it('should watch a directory', function (done) {
-		var expectCount = 0;
+		var hasWritten = false;
+		var hasUnlinked = false;
 		var isDone = false;
-		var isWritten = false;
 		fs.mkdir('test/watch', function (err) {
 			var load = chug('test/watch')
 				.watch(function () {
-					assert.equal(load.assets.length, expectCount);
-					if (expectCount) {
-						expectCount = 0;
+					if (!hasWritten && (load.assets.length > 0)) {
+						hasWritten = true;
 						fs.unlink('test/watch/a.txt');
 					}
-					else {
+					else if (!hasUnlinked && (load.assets.length == 0)) {
+						hasUnlinked = true;
 						fs.rmdir('test/watch', function () {
 							if (!isDone) {
 								isDone = true;
@@ -224,11 +224,7 @@ describe('Load', function () {
 				})
 				.then(function () {
 					this.replayableActions = [];
-					expectCount = 1;
-					if (!isWritten) {
-						isWritten = true;
-						fs.writeFile('test/watch/a.txt', 'A');
-					}
+					fs.writeFile('test/watch/a.txt', 'A');
 				});
 		});
 	});
