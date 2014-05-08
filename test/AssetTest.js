@@ -2,6 +2,8 @@ var chug = require('../chug');
 var Asset = require('../lib/Asset');
 var assert = require('assert-plus');
 chug.setApp(require('express')());
+//var resolve = require.resolve;
+
 
 describe('Asset', function () {
 	it('should should have a location', function () {

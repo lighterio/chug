@@ -63,7 +63,7 @@ api._app = null;
  */
 api.setApp = function setApp(app) {
 	api._app = app;
-	app._revisionTag = Math.round((new Date()).getTime() / 1000);
+	app._cacheBust = Math.round((new Date()).getTime() / 1000);
 };
 
 /**

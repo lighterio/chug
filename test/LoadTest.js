@@ -159,7 +159,7 @@ describe('Load', function () {
 					response.on('data', function (chunk) {
 						var data = '' + chunk;
 						assert.equal(/var a;/.test(data), true);
-						http.get('http://127.0.0.1:8999/core.1234.js', function (response) {
+						http.get('http://127.0.0.1:8999/core.js?v=1234', function (response) {
 							response.on('data', function (chunk) {
 								var data = '' + chunk;
 								assert.equal(/var a;/.test(data), true);
