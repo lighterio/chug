@@ -203,6 +203,7 @@ describe('Load', function () {
 	});
 	it('should watch a directory', function (done) {
 		var expectCount = 0;
+		var isDone = false;
 		fs.mkdir('test/watch', function () {
 			var load = chug('test/watch')
 				.watch(function () {
@@ -213,7 +214,10 @@ describe('Load', function () {
 					}
 					else {
 						fs.rmdir('test/watch', function () {
-							done();
+							if (!isDone) {
+								isDone = true;
+								done();
+							}
 						});
 					}
 				})
