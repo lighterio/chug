@@ -116,7 +116,7 @@ describe('Load', function () {
 			.then(function () {
 				assert.equal(count, 2);
 				assert.equal(this.assets.length, 2);
-				assert.equal(this.watchablePaths.length, 1);
+				assert.equal(this.watchablePaths.length, 2);
 				done();
 			});
 	});
