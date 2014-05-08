@@ -62,31 +62,34 @@ contents if it is a directory.
 ## Load
 
 ### .each(function callback)
-`each` waits until all assets are loaded, then iterates over them
+`.each` waits until all assets are loaded, then iterates over them
 with a callback that takes an asset argument.
 
 ### .then(function callback)
-`then` waits until all assets are loaded, then runs a callback.
+`.then` waits until all assets are loaded, then runs a callback.
 
 ### .compile()
-`compile` runs `compile` an each asset, using `each`.
+`.compile` runs `compile` on each asset, using `each`.
 
 ### .minify()
-`minify` runs `minify` on each asset, using `each`.
+`.minify` runs `minify` on each asset, using `each`.
 
 ### .watch()
-`watch` puts a `fs.watch` on the files and directories that were
+`.watch` puts a `fs.watch` on the files and directories that were
 added to the `Load`. When changes occur, the affected assets are
 reloaded, then the load re-runs its chain of actions.
 
+### .require()
+`.require` loads each asset as a Node.js module.
+
 ### .route([string path])
-`route` adds a route to the app that was linked to `chug` with
+`.route` adds a route to the app that was linked to `chug` with
 the `setApp` method. It uses `app.get`, so Express-like apps are
 supported.  If a path is specified, it is used.  If not, chug
 will use a modified file path as the URL path.
 
 ### .concat([string location][, Load load])
-`concat` creates a concatenation of all assets from the load on
+`.concat` creates a concatenation of all assets from the load on
 which `concat` was called.  The optional `location` argument
 specifies the asset cache key for the newly concatenated asset.
 The optional `load` argument, if specified, will cause the new
@@ -94,7 +97,7 @@ asset to be added to an existing load rather than the default
 behavior of returning a new load with a single asset.
 
 ### .write([directory][, filename][, mode])
-`write` writes one or more assets to files. If the directory
+`.write` writes one or more assets to files. If the directory
 argument is omitted, the current working directory is used.
 The filename argument (if provided) gets appended to the
 directory, otherwise the asset location is used.  The mode
@@ -103,11 +106,11 @@ specifies which version of the content should be written
 to file.
 
 ### .getLocations()
-`getLocations` returns an array of the locations of the assets
+`.getLocations` returns an array of the locations of the assets
 in the load.
 
 ### .getTags([string path])
-`getTags` returns a string of HTML, containing script tags and
+`.getTags` returns a string of HTML, containing script tags and
 link tags for any JS and CSS assets in the load. The optional
 path argument prepends a path to the location of those assets.
 

@@ -370,4 +370,12 @@ describe('Load', function () {
 		}
 		assert.equal(load.getTags(), '');
 	});
+	it('should require modules', function (done) {
+		chug('test/modules')
+			.require()
+			.then(function () {
+				assert.equal(marco, 'polo');
+				done();
+			});
+	});
 });
