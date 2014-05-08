@@ -148,19 +148,20 @@ describe('Asset', function () {
 				+ asset.getCompiledContent()
 				+ asset.getMinifiedContent();
 			concat = concat.replace(/# NOWRAP\n/g, '');
+			assert.equal(concat, expected);
 		}
-		chug._shrinker.tokens = [];
+		chug._shrinker.reset();
 		chug('test/scripts/c.coffee')
 			.each(function (asset) {
 				verifyContents(asset, "c = '_CC'c = '_CC'c = '_CC'");
 			})
 			.compile()
 			.each(function (asset) {
-				verifyContents(asset, "c = '_CC'var c;\n\n  c = '_CC';var c;\n\n  c = '_CC';var c;");
+				verifyContents(asset, "c = '_CC'var c;\n\n  c = '_CC';var c;\n\n  c = '_CC';");
 			})
 			.minify()
 			.each(function (asset) {
-				verifyContents(asset, "c = '_CC'var c;\n\n  c = '_CC';var c;c=\"_CC\";");
+				verifyContents(asset, "c = '_CC'var c;\n\n  c = '_CC';var c;c=\"a\";");
 			})
 			.then(done);
 	});

@@ -14,7 +14,7 @@
     "route",
     "router"
   ],
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "chug.js",
   "homepage": "http://lighter.io/chug",
   "repository": "git://github.com/zerious/chug.git",
@@ -39,7 +39,8 @@
     "ltl": "^0.1.1",
     "less": "^1.7.0",
     "node-sass": "^0.8.4",
-    "stylus": "^0.42.3"
+    "stylus": "^0.42.3",
+    "coffee-script": "^1.7.1"
   },
   "devDependencies": {
     "assert-plus": "~0.1.5",
