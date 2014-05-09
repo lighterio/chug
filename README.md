@@ -1,4 +1,4 @@
-# chug
+# Chug
 
  [![NPM Version](https://badge.fury.io/js/chug.png)](http://badge.fury.io/js/chug)
  [![Build Status](https://travis-ci.org/zerious/chug.png?branch=master)](https://travis-ci.org/zerious/chug)
@@ -20,11 +20,11 @@ npm i --save chug
 ## Getting Started
 
 Chug is a function with chaining methods, and you can use it inside your Node
-app. Calls to ```chug``` return a ```Load```, which is a list of assets, very
+app. Calls to `chug` return a `Load`, which is a list of assets, very
 similar to the way jQuery returns an object containing a list of DOM elements.
-Operations on a ```Load``` are chained asynchronously.
+Operations on a `Load` are chained asynchronously.
 
-If your ```scripts``` directory contains some CoffeeScript that you're using
+If your `scripts` directory contains some CoffeeScript that you're using
 along with jQuery, and you want to compile your CS, concatenate it with JS,
 and serve it from Express as a single file which gets reloaded when you make
 changes, you can use the following:

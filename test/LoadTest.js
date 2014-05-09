@@ -205,9 +205,13 @@ describe('Load', function () {
 		var hasWritten = false;
 		var hasUnlinked = false;
 		var isDone = false;
+		chug.setApp(app);
+		var cacheBust = chug._app._cacheBust;
 		fs.mkdir('test/watch', function (err) {
 			var load = chug('test/watch')
 				.watch(function () {
+					chug._app = null;
+
 					if (!hasWritten && (load.assets.length > 0)) {
 						hasWritten = true;
 						fs.unlink('test/watch/a.txt');

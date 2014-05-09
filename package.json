@@ -14,7 +14,7 @@
     "route",
     "router"
   ],
-  "version": "0.1.7",
+  "version": "0.1.8",
   "main": "chug.js",
   "homepage": "http://lighter.io/chug",
   "repository": "git://github.com/zerious/chug.git",
@@ -48,7 +48,8 @@
     "istanbul": "0.2.8",
     "express": "4.1.1",
     "clean-css": "2.1.6",
-    "zeriousify": "0.0.6"
+    "zeriousify": "0.0.6",
+    "coveralls": "2.10.0"
   },
   "bugs": {
     "url": "http://github.com/zerious/chug/issues"
