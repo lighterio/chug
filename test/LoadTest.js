@@ -389,7 +389,7 @@ describe('Load', function () {
 		var stat = fs.stat;
 		var readFile = fs.readFile;
 		fs.readdir = function (path, callback) {
-			callback(null, ['a.js', 'b.js']);
+			callback(null, ['a.js', 'b.js', 'c.js']);
 		};
 		fs.stat = function (path, callback) {
 			var stat = {
@@ -400,28 +400,32 @@ describe('Load', function () {
 			if (/a\.js$/.test(path)) {
 				setTimeout(function () {
 					callback(null, stat);
-				}, 100);
+				}, 20);
 			} else {
 				callback(null, stat);
 			}
 		};
 		fs.readFile = function (path, callback) {
-			if (/a\.js$/.test(path)) {
+			if (/b\.js$/.test(path)) {
 				setTimeout(function () {
-					callback(null, 'var a = 1;');
-				}, 200);
+					callback(null, 'var b = 2;');
+				}, 40);
 			} else {
-				callback(null, 'var b = 1;');
+				callback(null, /a\.js/.test(path) ? 'var a = 1;' : 'var c = 3;');
 			}
 		};
-		chug('test/mock')
+		chug('mock')
 			.then(function () {
 				var joined = this.getLocations().join(',');
-				assert.equal(joined, cwd + '/test/mock/a.js,' + cwd + '/test/mock/b.js');
-				fs.readdir = readdir;
-				fs.stat = stat;
-				fs.readFile = readFile;
-				done();
+				assert.equal(joined, cwd + '/mock/a.js,' + cwd + '/mock/b.js,' + cwd + '/mock/c.js');
+				chug.cache.clear();
+				chug('test/mock').concat('c').each(function (asset) {
+					assert.equal(asset.content, 'var a = 1;var b = 2;var c = 3;');
+					fs.readdir = readdir;
+					fs.stat = stat;
+					fs.readFile = readFile;
+					done();
+				});
 			});
 	});
 });
