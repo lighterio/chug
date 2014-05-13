@@ -40,7 +40,7 @@ describe('Asset', function () {
 	it('should not compile stuff that doesn\'t have a module', function() {
 		var asset = new Asset('hi.doesnotexist');
 		var errors = 0;
-		chug._error = function error() {
+		chug._logger.error = function error() {
 			errors++;
 		}
 		asset.setContent('hi');
@@ -76,7 +76,7 @@ describe('Asset', function () {
 		var path = require.resolve('ltl');
 		require.cache[path].exports = {};
 		var errors = 0;
-		chug._error = function error() {
+		chug._logger.error = function error() {
 			errors++;
 		}
 		asset.compile();

@@ -39,11 +39,6 @@ api.version = require('./package.json').version;
 api._ignorePattern = /^(\.+)(|DS_Store|gitignore)$/;
 
 /**
- * When there's an error, just log it.
- */
-api._error = console.error;
-
-/**
  * Cache all assets so each one only needs to be loaded once.
  */
 api.cache = new Cache();
@@ -64,6 +59,19 @@ api._app = null;
 api.setApp = function setApp(app) {
 	api._app = app;
 	app._cacheBust = Math.round((new Date()).getTime() / 1000);
+};
+
+/**
+ * When there's an error, we need a logger.
+ */
+api._logger = console;
+
+/**
+ * Set a logger that exposes `logger.error(message)`.
+ * @param logger
+ */
+api.setLogger = function setLogger(logger) {
+	api._logger = logger;
 };
 
 /**
@@ -103,7 +111,7 @@ api.setCompiler = function setCompiler(fileExtension, moduleName) {
 		compiler = require(moduleName);
 	}
 	catch (e) {
-		api._error('Could not load compiler: ' + moduleName);
+		api._logger.error('Could not load compiler: ' + moduleName);
 	}
 	api._compilers[fileExtension] = compiler;
 	return compiler;

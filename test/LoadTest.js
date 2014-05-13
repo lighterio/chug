@@ -55,9 +55,9 @@ describe('Load', function () {
 	});
 	it('should log an error for an invalid location', function () {
 		var errors = 0;
-		chug._error = function () {
+		chug.setLogger({error: function () {
 			errors++;
-		}
+		}});
 		chug({});
 		assert.equal(errors, 1);
 	});
@@ -98,7 +98,7 @@ describe('Load', function () {
 		var stat = fs.stat;
 		fs.stat = mockStat;
 		var errors = 0;
-		chug._error = function () {
+		chug._logger.error = function () {
 			errors++;
 		}
 		chug('test/nonexistent');
@@ -191,7 +191,7 @@ describe('Load', function () {
 	it('should not route until an app is set', function (done) {
 		chug._app = null;
 		var errors = 0;
-		chug._error = function () {
+		chug._logger.error = function () {
 			errors++;
 		}
 		chug('test/scripts/b.js')

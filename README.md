@@ -118,10 +118,15 @@ path argument prepends a path to the location of those assets.
 
 The chug function is also an object with several methods.
 
-### setApp(App app)
+### setApp(Object app)
 
 When you pass an Express-like app to `setApp`, you can then call
 `route` on any assets that you'd like to route via `app.get`.
+
+### setLogger(Object logger)
+
+Set a logger that exposes `logger.error(message)` to override the
+default console logger.
 
 ### setCompiler(string fileExtension, string moduleName)
 
