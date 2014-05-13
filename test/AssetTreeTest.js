@@ -12,5 +12,6 @@ describe('AssetTree', function () {
 		var tree = new AssetTree(123);
 		tree.add(456);
 		assert.equal(tree.children[0].data, 456);
+		assert.equal(tree.children[0].depth, 1);
 	});
 });

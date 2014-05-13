@@ -4,6 +4,7 @@ var fs = require('fs');
 var http = require('http');
 var Asset = require('../lib/Asset');
 var exec = require('child_process').exec;
+var cwd = process.cwd();
 
 var app = require('express')();
 app.listen(8999);
@@ -233,22 +234,24 @@ describe('Load', function () {
 		});
 	});
 	it('should watch views', function (done) {
-		var concatCalls = 0;
-		var load = chug('test/views');
-		var concat = load.concat().then(function () {
-			concat.assets[0].setContent = function () {
-				if (++concatCalls == 2) {
-					load.replayableActions = [];
-					concat.replayableActions = [];
-					done();
+		fs.unlink('test/views/DELETE_ME.ltl', function () {
+			var concatCalls = 0;
+			var load = chug('test/views');
+			var concat = load.concat().then(function () {
+				concat.assets[0].setContent = function () {
+					if (++concatCalls == 2) {
+						load.replayableActions = [];
+						concat.replayableActions = [];
+						done();
+					}
 				}
-			}
-		});
-		load.watch(function () {
-			fs.unlink('test/views/boom.ltl', function () {});
-		});
-		load.then(function () {
-			fs.writeFile('test/views/boom.ltl', 'b boom', function () {});
+			});
+			load.watch(function () {
+				fs.unlink('test/views/DELETE_ME.ltl', function () {});
+			});
+			load.then(function () {
+				fs.writeFile('test/views/DELETE_ME.ltl', 'b boom', function () {});
+			});
 		});
 	});
 	it('should watch scripts', function (done) {
@@ -378,6 +381,46 @@ describe('Load', function () {
 			})
 			.require(function (module) {
 				assert.equal(module.name, 'marco');
+				done();
+			});
+	});
+	it('should sort files', function (done) {
+		var readdir = fs.readdir;
+		var stat = fs.stat;
+		var readFile = fs.readFile;
+		fs.readdir = function (path, callback) {
+			callback(null, ['a.js', 'b.js']);
+		};
+		fs.stat = function (path, callback) {
+			var stat = {
+				isDirectory: function () {
+					return !/\.js$/.test(path);
+				}
+			};
+			if (/a\.js$/.test(path)) {
+				setTimeout(function () {
+					callback(null, stat);
+				}, 100);
+			} else {
+				callback(null, stat);
+			}
+		};
+		fs.readFile = function (path, callback) {
+			if (/a\.js$/.test(path)) {
+				setTimeout(function () {
+					callback(null, 'var a = 1;');
+				}, 200);
+			} else {
+				callback(null, 'var b = 1;');
+			}
+		};
+		chug('test/mock')
+			.then(function () {
+				var joined = this.getLocations().join(',');
+				assert.equal(joined, cwd + '/test/mock/a.js,' + cwd + '/test/mock/b.js');
+				fs.readdir = readdir;
+				fs.stat = stat;
+				fs.readFile = readFile;
 				done();
 			});
 	});
