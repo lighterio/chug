@@ -1,4 +1,3 @@
-// Require modules in order to prevent circular dependency problems.
 var Class = require('./lib/Class');
 var Waiter = require('./lib/Waiter');
 var Asset = require('./lib/Asset');
@@ -8,8 +7,6 @@ var Cache = require('./lib/Cache');
 
 /**
  * Expose a function that creates a new "Load" of files.
- * @param path
- * @returns {Load}
  */
 var api = module.exports = function load(location) {
 	return new Load(location, api);
@@ -29,7 +26,6 @@ for (var property in waiter) {
 
 /**
  * Expose the version to module users.
- * @type {string}
  */
 api.version = require('./package.json').version;
 
@@ -47,18 +43,16 @@ api.onReady(function () {
 });
 
 /**
- * Express or similar app with app.get(path, callback) routing.
- * @type {App}
+ * Express or similar server with server.get(path, callback) routing.
  */
-api._app = null;
+api._server = null;
 
 /**
- * Set the Express-like app that will be used for routing.
- * @param app
+ * Set the Express-like server that will be used for routing.
  */
-api.setApp = function setApp(app) {
-	api._app = app;
-	app._cacheBust = Math.round((new Date()).getTime() / 1000);
+api.setServer = function setServer(server) {
+	api._server = server;
+	server._cacheBust = Math.round((new Date()).getTime() / 1000);
 };
 
 /**
@@ -68,7 +62,6 @@ api._logger = console;
 
 /**
  * Set a logger that exposes `logger.error(message)`.
- * @param logger
  */
 api.setLogger = function setLogger(logger) {
 	api._logger = logger;
@@ -102,8 +95,6 @@ api._compilers = {
 
 /**
  * Set the compiler for a type of file, specifying the module name.
- * @param fileExtension
- * @param moduleName
  */
 api.setCompiler = function setCompiler(fileExtension, moduleName) {
 	var compiler = false;
@@ -145,8 +136,6 @@ api._targetLanguages = {
 
 /**
  * Set the minifier for a type of file, specifying the module name.
- * @param language
- * @param moduleName
  */
 api.setMinifier = function setMinifier(language, moduleName) {
 	var minifier = require(moduleName);

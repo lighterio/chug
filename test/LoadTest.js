@@ -6,9 +6,9 @@ var Asset = require('../lib/Asset');
 var exec = require('child_process').exec;
 var cwd = process.cwd();
 
-var app = require('express')();
-app.listen(8999);
-chug.setApp(app);
+var server = require('express')();
+server.listen(8999);
+chug.setServer(server);
 chug.enableShrinking();
 
 var mockStat = function (path, callback) {
@@ -189,8 +189,8 @@ describe('Load', function () {
 				});
 			});
 	});
-	it('should not route until an app is set', function (done) {
-		chug._app = null;
+	it('should not route until an server is set', function (done) {
+		chug._server = null;
 		var errors = 0;
 		chug._logger.error = function () {
 			errors++;
@@ -206,12 +206,12 @@ describe('Load', function () {
 		var hasWritten = false;
 		var hasUnlinked = false;
 		var isDone = false;
-		chug.setApp(app);
-		var cacheBust = chug._app._cacheBust;
+		chug.setServer(server);
+		var cacheBust = chug._server._cacheBust;
 		fs.mkdir('test/watch', function (err) {
 			var load = chug('test/watch')
 				.watch(function () {
-					chug._app = null;
+					chug._server = null;
 
 					if (!hasWritten && (load.assets.length > 0)) {
 						hasWritten = true;

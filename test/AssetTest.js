@@ -1,7 +1,7 @@
 var chug = require('../chug');
 var Asset = require('../lib/Asset');
 var assert = require('assert-plus');
-chug.setApp(require('express')());
+chug.setServer(require('express')());
 //var resolve = require.resolve;
 
 

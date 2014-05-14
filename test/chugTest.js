@@ -37,14 +37,14 @@ describe('API', function () {
 			assert.func(chug._minifiers.js.minify);
 		});
 	});
-	describe('setApp', function () {
-		var app = require('express')();
+	describe('setServer', function () {
+		var server = require('express')();
 		it('should be a function', function () {
-			assert.func(chug.setApp);
+			assert.func(chug.setServer);
 		});
-		it('should set the app', function () {
-			chug.setApp(app);
-			assert.func(chug._app.get);
+		it('should set the server', function () {
+			chug.setServer(server);
+			assert.func(chug._server.get);
 		});
 	});
 });

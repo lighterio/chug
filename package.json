@@ -14,7 +14,7 @@
     "route",
     "router"
   ],
-  "version": "0.1.13",
+  "version": "0.1.14",
   "main": "chug.js",
   "homepage": "http://lighter.io/chug",
   "repository": "git://github.com/zerious/chug.git",

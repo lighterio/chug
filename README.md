@@ -20,7 +20,7 @@ npm i --save chug
 ## Getting Started
 
 Chug is a function with chaining methods, and you can use it inside your Node
-app. Calls to `chug` return a `Load`, which is a list of assets, very
+server. Calls to `chug` return a `Load`, which is a list of assets, very
 similar to the way jQuery returns an object containing a list of DOM elements.
 Operations on a `Load` are chained asynchronously.
 
@@ -29,10 +29,10 @@ along with jQuery, and you want to compile your CS, concatenate it with JS,
 and serve it from Express as a single file which gets reloaded when you make
 changes, you can use the following:
 ```javascript
-var app = require('express')();
+var server = require('express')();
 var chug = require('chug');
 
-chug.setApp(app);
+chug.setServer(server);
 
 chug(['node_modules/jquery/dist/jquery.js', 'scripts'])
 	.compile()
@@ -83,10 +83,10 @@ reloaded, then the load re-runs its chain of actions.
 `.require` loads each asset as a Node.js module.
 
 ### .route([string path])
-`.route` adds a route to the app that was linked to `chug` with
-the `setApp` method. It uses `app.get`, so Express-like apps are
-supported.  If a path is specified, it is used.  If not, chug
-will use a modified file path as the URL path.
+`.route` adds a route to the server that was linked to `chug`
+with the `setServer` method. It uses `server.get`, so Express-ish
+servers are supported. If a path is specified, it is used. If
+not, chug will use a modified file path as the URL path.
 
 ### .concat([string location][, Load load])
 `.concat` creates a concatenation of all assets from the load on
@@ -118,10 +118,10 @@ path argument prepends a path to the location of those assets.
 
 The chug function is also an object with several methods.
 
-### setApp(Object app)
+### setServer(Object server)
 
-When you pass an Express-like app to `setApp`, you can then call
-`route` on any assets that you'd like to route via `app.get`.
+When you pass an Express-like server to `setServer`, you can then call
+`route` on any assets that you'd like to route via `server.get`.
 
 ### setLogger(Object logger)
 
