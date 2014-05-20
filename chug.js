@@ -52,7 +52,7 @@ api._server = null;
  */
 api.setServer = function setServer(server) {
 	api._server = server;
-	server._cacheBust = Math.round((new Date()).getTime() / 1000);
+  server._cacheBust = Math.round((new Date()).getTime() / 1000);
 };
 
 /**

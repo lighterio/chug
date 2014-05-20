@@ -18,3 +18,5 @@ node_modules
 test
 build
 .travis.yml
+
+.npmignore
