@@ -9,7 +9,7 @@ var Cache = require('./lib/Cache');
  * Expose a function that creates a new "Load" of files.
  */
 var api = module.exports = function load(location) {
-	return new Load(location, api);
+  return new Load(location, api);
 };
 
 /**
@@ -17,11 +17,11 @@ var api = module.exports = function load(location) {
  */
 var waiter = new Waiter();
 for (var property in waiter) {
-	Object.defineProperty(api, property, {
-		enumerable: false,
-		writable: true
-	});
-	api[property] = waiter[property];
+  Object.defineProperty(api, property, {
+    enumerable: false,
+    writable: true
+  });
+  api[property] = waiter[property];
 }
 
 /**
@@ -39,7 +39,7 @@ api._ignorePattern = /^(\.+)(|DS_Store|gitignore)$/;
  */
 api.cache = new Cache();
 api.onReady(function () {
-	api.cache.write();
+  api.cache.write();
 });
 
 /**
@@ -51,7 +51,7 @@ api._server = null;
  * Set the Express-like server that will be used for routing.
  */
 api.setServer = function setServer(server) {
-	api._server = server;
+  api._server = server;
   server._cacheBust = Math.round((new Date()).getTime() / 1000);
 };
 
@@ -64,7 +64,7 @@ api._logger = console;
  * Set a logger that exposes `logger.error(message)`.
  */
 api.setLogger = function setLogger(logger) {
-	api._logger = logger;
+  api._logger = logger;
 };
 
 /**
@@ -75,72 +75,72 @@ api.setLogger = function setLogger(logger) {
  *  - When typeof api.compiler[fileType] == 'string', we will require(api.compiler[fileType]).
  */
 api._compilers = {
-	txt: false,
-	html: false,
-	htm: false,
-	js: false,
-	css: false,
-	gif: false,
-	ico: false,
-	jpg: false,
-	jpeg: false,
-	png: false,
-	svg: false,
-	md: 'markdown',
-	ts: 'typescript.api',
-	coffee: 'coffee-script',
-	scss: 'node-sass',
-	styl: 'stylus'
+  txt: false,
+  html: false,
+  htm: false,
+  js: false,
+  css: false,
+  gif: false,
+  ico: false,
+  jpg: false,
+  jpeg: false,
+  png: false,
+  svg: false,
+  md: 'markdown',
+  ts: 'typescript.api',
+  coffee: 'coffee-script',
+  scss: 'node-sass',
+  styl: 'stylus'
 };
 
 /**
  * Set the compiler for a type of file, specifying the module name.
  */
 api.setCompiler = function setCompiler(fileExtension, moduleName) {
-	var compiler = false;
-	try {
-		compiler = require(moduleName);
-	}
-	catch (e) {
-		api._logger.error('Could not load compiler: ' + moduleName);
-	}
-	api._compilers[fileExtension] = compiler;
-	return compiler;
+  var compiler = false;
+  try {
+    compiler = require(moduleName);
+  }
+  catch (e) {
+    api._logger.error('Could not load compiler: ' + moduleName);
+  }
+  api._compilers[fileExtension] = compiler;
+  return compiler;
 };
 
 /**
  * JavaScript and CSS can be minified.
  */
 api._minifiers = {
-	js: 'uglify-js',
-	css: 'csso'
+  js: 'uglify-js',
+  css: 'csso'
 };
 
 /**
  * Several languages compile to HTML, JavaScript or CSS.
  */
 api._targetLanguages = {
-	ltl: 'html',
-	jade: 'html',
-	haml: 'html',
-	md: 'html',
-	markdown: 'html',
-	ts: 'js',
-	coffee: 'js',
-	iced: 'js',
-	litcoffee: 'js',
-	less: 'css',
-	scss: 'css',
-	styl: 'css'
+  ltl: 'html',
+  jade: 'html',
+  haml: 'html',
+  md: 'html',
+  markdown: 'html',
+  ts: 'js',
+  coffee: 'js',
+  iced: 'js',
+  litcoffee: 'js',
+  less: 'css',
+  scss: 'css',
+  styl: 'css'
 };
 
 /**
  * Set the minifier for a type of file, specifying the module name.
  */
 api.setMinifier = function setMinifier(language, moduleName) {
-	var minifier = require(moduleName);
-	api._minifiers[language] = minifier;
-	return minifier;
+  var minifier = require(moduleName);
+  api._minifiers[language] = minifier;
+  return minifier;
 };
 
 /**
@@ -152,8 +152,8 @@ api._shrinker;
  * Enable the shrinker.
  */
 api.enableShrinking = function() {
-	api._shrinker = require('./lib/shrinker');
-	api.cache.each(function (asset) {
-		asset.minify();
-	});
+  api._shrinker = require('./lib/shrinker');
+  api.cache.each(function (asset) {
+    asset.minify();
+  });
 };

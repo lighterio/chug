@@ -35,10 +35,10 @@ var chug = require('chug');
 chug.setServer(server);
 
 chug(['node_modules/jquery/dist/jquery.js', 'scripts'])
-	.compile()
-	.watch()
-	.concat('/all.js')
-	.route();
+  .compile()
+  .watch()
+  .concat('/all.js')
+  .route();
 ```
 
 
