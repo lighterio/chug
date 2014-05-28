@@ -428,4 +428,39 @@ describe('Load', function () {
 				});
 			});
 	});
+	it('should ignore filenames and patterns', function (done) {
+		var readdir = fs.readdir;
+		var stat = fs.stat;
+		var readFile = fs.readFile;
+		var firstReaddir = true;
+		fs.readdir = function (path, callback) {
+			setImmediate(function () {
+				callback(null, [
+					'.DS_Store',
+					'.gitignore',
+					'a.js',
+					'node_modules',
+					'ignoreMe'
+				]);
+			});
+		};
+		fs.stat = function (path, callback) {
+			callback(null, {
+				isDirectory: function () {
+					return path.indexOf('.') < 0;
+				}
+			});
+		};
+		fs.readFile = function (path, callback) {
+			callback(null, 'CONTENT');
+		};
+		chug('mock').ignore('node_modules').ignore(/ignore/)
+			.then(function (load) {
+				assert.equal(this.assets.length, 1);
+				fs.readdir = readdir;
+				fs.stat = stat;
+				fs.readFile = readFile;
+				done();
+			});
+	});
 });

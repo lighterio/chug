@@ -61,6 +61,9 @@ directory.
 
 ## Load
 
+### .ignore(string|RegExp filenameOrPattern)
+Adds a filename or pattern to be ignored while chugging directories.
+
 ### .each(function callback)
 `.each` waits until all assets are loaded, then iterates over them
 with a callback that takes an asset argument.
