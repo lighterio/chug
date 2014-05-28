@@ -14,7 +14,7 @@
     "route",
     "router"
   ],
-  "version": "0.1.20",
+  "version": "0.1.21",
   "main": "chug.js",
   "homepage": "http://lighter.io/chug",
   "repository": "git://github.com/zerious/chug.git",
@@ -43,13 +43,13 @@
   },
   "devDependencies": {
     "assert-plus": "0.1.5",
-    "mocha": "1.19.0",
+    "mocha": "1.20.0",
     "istanbul": "0.2.10",
     "express": "4.3.1",
     "clean-css": "2.1.8",
-    "zeriousify": "0.1.4",
+    "zeriousify": "0.1.5",
     "coveralls": "2.10.0",
-    "ltl": "0.1.4"
+    "ltl": "0.1.5"
   },
   "bugs": {
     "url": "http://github.com/zerious/chug/issues"
