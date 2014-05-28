@@ -326,7 +326,6 @@ describe('Load', function () {
 		chug('test/scripts/b.js')
 			.minify()
 			.write()
-			.write('build')
 			.write('build', 'b.js')
 			.write('build', 'b.min.js', 'minified')
 			.then(function () {
