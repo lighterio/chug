@@ -2,13 +2,14 @@ var chug = require('../chug');
 var assert = require('assert-plus');
 var fs = require('fs');
 var http = require('http');
+var zlib = require('zlib');
 var Asset = require('../lib/Asset');
 var exec = require('child_process').exec;
 var cwd = process.cwd();
 
-var server = require('express')();
-server.listen(8999);
-chug.setServer(server);
+var express = require('express')();
+express.listen(8999);
+chug.setServer(express);
 chug.enableShrinking();
 
 var mockStat = function (path, callback) {
@@ -99,9 +100,11 @@ describe('Load', function () {
     var stat = fs.stat;
     fs.stat = mockStat;
     var errors = 0;
-    chug._logger.error = function () {
-      errors++;
-    }
+    chug.setLogger({
+      error: function error() {
+        errors++;
+      }
+    });
     chug('test/nonexistent');
     assert.equal(errors, 1);
     fs.readdir = readdir;
@@ -173,6 +176,7 @@ describe('Load', function () {
       });
   });
   it('should route ltl', function (done) {
+    chug.setServer(express);
     chug.enableShrinking();
     chug('test/views')
       .compile()
@@ -180,7 +184,7 @@ describe('Load', function () {
       .route()
       .then(function () {
         chug._shrinker = null;
-        http.get('http://127.0.0.1:8999/views/hello', function (response) {
+        http.get('http://127.0.0.1:8999/test/views/hello', function (response) {
           response.on('data', function (chunk) {
             var data = '' + chunk;
             assert.equal(/DOCTYPE/.test(data), true);
@@ -189,12 +193,14 @@ describe('Load', function () {
         });
       });
   });
-  it('should not route until an server is set', function (done) {
+  it('should not route until a server is set', function (done) {
     chug._server = null;
     var errors = 0;
-    chug._logger.error = function () {
-      errors++;
-    }
+    chug.setLogger({
+      error: function error() {
+        errors++;
+      }
+    });
     chug('test/scripts/b.js')
       .route()
       .then(function () {
@@ -202,11 +208,41 @@ describe('Load', function () {
         done();
       });
   });
+  it('should compress when routing with Za', function (done) {
+    var za = require('za')();
+    var decorations = require.resolve('za/lib/http');
+    delete require.cache[decorations];
+    require(decorations);
+    za.listen(8998);
+
+    chug.setServer(za);
+    chug('test/scripts/b.js')
+      .minify()
+      .route()
+      .then(function () {
+        http.get({
+          hostname: '127.0.0.1',
+          port: 8998,
+          path: '/test/scripts/b.js',
+          method: 'GET',
+          headers: {'accept-encoding': 'gzip'}
+        }, function (response) {
+          response.on('data', function (chunk) {
+            zlib.gunzip(chunk, function (err, data) {
+              assert.equal('' + data, 'var b=2;');
+              za.close();
+              delete http.ServerResponse.prototype.zip;
+              done();
+            });
+          });
+        });
+      });
+  });
   it('should watch a directory', function (done) {
     var hasWritten = false;
     var hasUnlinked = false;
     var isDone = false;
-    chug.setServer(server);
+    chug.setServer(express);
     var cacheBust = chug._server._cacheBust;
     fs.mkdir('test/watch', function (err) {
       var load = chug('test/watch')

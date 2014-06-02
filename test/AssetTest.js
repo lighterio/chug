@@ -2,7 +2,6 @@ var chug = require('../chug');
 var Asset = require('../lib/Asset');
 var assert = require('assert-plus');
 chug.setServer(require('express')());
-//var resolve = require.resolve;
 
 
 describe('Asset', function () {
@@ -40,9 +39,11 @@ describe('Asset', function () {
   it('should not compile stuff that doesn\'t have a module', function() {
     var asset = new Asset('hi.doesnotexist');
     var errors = 0;
-    chug._logger.error = function error() {
-      errors++;
-    }
+    chug.setLogger({
+      error: function error() {
+        errors++;
+      }
+    });
     asset.setContent('hi');
     asset.compile();
     assert.equal(typeof asset.compiledContent, 'undefined');
@@ -76,9 +77,11 @@ describe('Asset', function () {
     var path = require.resolve('ltl');
     require.cache[path].exports = {};
     var errors = 0;
-    chug._logger.error = function error() {
-      errors++;
-    }
+    chug.setLogger({
+      error: function error() {
+        errors++;
+      }
+    });
     asset.compile();
     assert.equal(errors, 1);
     require.cache[path].exports = ltl;
@@ -152,18 +155,19 @@ describe('Asset', function () {
       concat = concat.replace(/# NOWRAP\n/g, '');
       assert.equal(concat, expected);
     }
+    chug.enableShrinking();
     chug._shrinker.reset();
     chug('test/scripts/c.coffee')
       .each(function (asset) {
-        verifyContents(asset, "c = '_CC'c = '_CC'c = '_CC'");
+        verifyContents(asset, "c = '_CC'\nc = '_CC'\nc = '_CC'\n");
       })
       .compile()
       .each(function (asset) {
-        verifyContents(asset, "c = '_CC'var c;\n\n  c = '_CC';var c;\n\n  c = '_CC';");
+        verifyContents(asset, "c = '_CC'\nvar c;\n\n  c = '_CC';var c;\n\n  c = '_CC';");
       })
       .minify()
       .each(function (asset) {
-        verifyContents(asset, "c = '_CC'var c;\n\n  c = '_CC';var c;c=\"a\";");
+        verifyContents(asset, "c = '_CC'\nvar c;\n\n  c = '_CC';var c;c=\"a\";");
       })
       .then(done);
   });
