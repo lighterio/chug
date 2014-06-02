@@ -86,10 +86,11 @@ reloaded, then the load re-runs its chain of actions.
 Loads each asset as a Node.js module.
 
 ### .route([string path])
-Adds a route to the server that was linked to `chug`
+Adds routes to the server that was linked to `chug`
 with the `setServer` method. It uses `server.get`, so Express-ish
 servers are supported. If a path is specified, it is used. If
-not, chug will use a modified file path as the URL path.
+not, chug will use the asset location as the URL. The asset location
+is either the filePath or a location specified in a `concat` call.
 
 ### .concat([string location][, Load load])
 Creates a concatenation of all assets from the load on
@@ -98,6 +99,32 @@ specifies the asset cache key for the newly concatenated asset.
 The optional `load` argument, if specified, will cause the new
 asset to be added to an existing load rather than the default
 behavior of returning a new load with a single asset.
+
+### .shrink()
+Builds a dictionary of terms that match `/_[A-Z][_A-Z0-9]+/`,
+then replaces occurrences of the terms with short names containing
+one or more lowercase letters. This can be used to replace classes
+and IDs in your minified JS and CSS since they wouldn't be replaced
+by Uglify or CSSO.
+
+### .cull(string key, string value)
+If you would like to designate certain sections of code as applying
+only to certain environments or certain browsers, you can put "cull"
+comments around your code.
+
+```javascript
+var env = 'prod';
+//+env:dev
+env = 'dev';
+//-env:dev
+//+browser:ie6
+window.console={log:function(){/*Srsly?*/}}
+//-browser:ie6
+```
+
+Calling `load.cull('env', 'dev').cull('browser', 'chrome')` on the
+code above would result in `env` being set to dev and the native
+console remaining intact.
 
 ### .write([directory, filename][, mode])
 Writes one or more assets to files. If the directory

@@ -193,4 +193,24 @@ describe('Asset', function () {
     chug._shrinker = null;
     delete chug._compilers.temp;
   });
+  it('should cull based on comments', function () {
+    var asset = new Asset('cull.js');
+    asset.setContent(
+      'var env = prod;\n' +
+      '//+env:dev\n' +
+      '  env = "dev";\n' +
+      '//-env:dev\n' +
+      '//+env:stage\n' +
+      '  env = "stage";\n' +
+      '//-env:stage\n' +
+      '//+target:ie6\n' +
+      '  window.console={log:function(){/*no log for you*/}};\n' +
+      '//-target:ie6\n');
+    asset
+      .cull('env', 'dev')
+      .cull('target', 'chrome');
+    assert.equal(asset.getCompiledContent(),
+      'var env = prod;\n\n' +
+      '  env = "dev";\n\n\n\n');
+  });
 });

@@ -135,6 +135,26 @@ describe('Load', function () {
   it('should compile and minify', function (done) {
     chug('test/views/hello.ltl').compile().minify().then(done);
   });
+  it('should cull content', function (done) {
+    chug.cache.clear();
+    chug('test/views/hello.ltl').cull().compile().each(function (h) {
+      assert.equal(h.cullTarget, 'content');
+      done();
+    });
+  });
+  it('should cull compiled content', function (done) {
+    chug.cache.clear();
+    chug('test/scripts/a.coffee').compile().cull().each(function (a) {
+      assert.equal(a.cullTarget, 'compiledContent');
+      done();
+    });
+  });
+  it('should not cull binary content', function (done) {
+    chug('test/icons/chug.ico').cull().each(function (i) {
+      assert.equal(typeof i[i.cullTarget], 'object');
+      done();
+    });
+  });
   it('should concatenate scripts', function (done) {
     chug('test/scripts')
       .concat()
