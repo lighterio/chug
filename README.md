@@ -77,6 +77,9 @@ Runs `compile` on each asset, using `each`.
 ### .minify()
 Runs `minify` on each asset, using `each`.
 
+### .gzip()
+Runs `gzip` on each asset, using `each`.
+
 ### .watch()
 Puts a `fs.watch` on the files and directories that were
 added to the `Load`. When changes occur, the affected assets are

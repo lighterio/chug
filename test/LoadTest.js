@@ -155,6 +155,12 @@ describe('Load', function () {
       done();
     });
   });
+  it('should not gzip binary content', function (done) {
+    chug('test/icons/chug.ico').gzip().each(function (i) {
+      assert.equal(typeof i[i.gzippedContent], 'undefined');
+      done();
+    });
+  });
   it('should concatenate scripts', function (done) {
     chug('test/scripts')
       .concat()
@@ -238,6 +244,7 @@ describe('Load', function () {
     chug.setServer(za);
     chug('test/scripts/b.js')
       .minify()
+      .gzip()
       .route()
       .then(function () {
         http.get({
