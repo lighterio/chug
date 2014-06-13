@@ -205,7 +205,7 @@ describe('Load', function () {
     chug.setServer(express);
     chug.enableShrinking();
     chug('test/views')
-      .compile()
+      .compile({space: '  '})
       .minify()
       .route()
       .then(function () {

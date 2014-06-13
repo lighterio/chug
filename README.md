@@ -71,8 +71,8 @@ with a callback that takes an asset argument.
 ### .then(function callback)
 Waits until all assets are loaded, then runs a callback.
 
-### .compile()
-Runs `compile` on each asset, using `each`.
+### .compile([Object options])
+Runs `compile` on each asset, using `each`, with optional compilation options.
 
 ### .minify()
 Runs `minify` on each asset, using `each`.
@@ -127,7 +127,14 @@ window.console={log:function(){/*Srsly?*/}}
 
 Calling `load.cull('env', 'dev').cull('browser', 'chrome')` on the
 code above would result in `env` being set to dev and the native
-console remaining intact.
+console remaining intact.  You can also use a comma-delimited value
+in your comment, so that multiple cull keys will leave the code intact.
+
+```javascript
+//+env:dev,debug
+verbose = true;
+//-env:dev,debug
+```
 
 ### .write([directory, filename][, mode])
 Writes one or more assets to files. If the directory

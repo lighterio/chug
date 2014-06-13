@@ -163,11 +163,11 @@ describe('Asset', function () {
       })
       .compile()
       .each(function (asset) {
-        verifyContents(asset, "c = '_CC'\nvar c;\n\n  c = '_CC';var c;\n\n  c = '_CC';");
+        verifyContents(asset, "c = '_CC'\nvar c;\n\nc = '_CC';\nvar c;\n\nc = '_CC';\n");
       })
       .minify()
       .each(function (asset) {
-        verifyContents(asset, "c = '_CC'\nvar c;\n\n  c = '_CC';var c;c=\"a\";");
+        verifyContents(asset, "c = '_CC'\nvar c;\n\nc = '_CC';\nvar c;c=\"a\";");
       })
       .then(done);
   });
@@ -205,12 +205,16 @@ describe('Asset', function () {
       '//-env:stage\n' +
       '//+target:ie6\n' +
       '  window.console={log:function(){/*no log for you*/}};\n' +
-      '//-target:ie6\n');
+      '//-target:ie6\n' +
+      '//+env:debug,dev\n' +
+      '  console.log("dev mode");\n' +
+      '//-env:debug,dev\n');
     asset
       .cull('env', 'dev')
       .cull('target', 'chrome');
     assert.equal(asset.getCompiledContent(),
       'var env = prod;\n\n' +
-      '  env = "dev";\n\n\n\n');
+      '  env = "dev";\n\n\n\n\n' +
+      '  console.log("dev mode");\n\n');
   });
 });
