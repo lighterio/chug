@@ -356,17 +356,23 @@ describe('Load', function () {
           })
           fs.writeFile('test/empty/___bak___', 'TEST');
         });
-    })
+    });
   });
   it('should watch a single file', function (done) {
-    var load = chug('test/scripts/b.js');
+    var load = chug(['test/scripts/a.coffee', 'test/scripts/b.js']);
+    var changed = '';
     load
       .minify()
-      .watch()
-      .onceReady(function () {
-        fs.writeFile('test/scripts/b.js', 'var b = 2;', function () {
+      .watch(function (file, event) {
+        assert.equal(event, 'change');
+        assert.equal(file.substr(-4, 4), 'b.js');
+        if (done) {
           done();
-        });
+          done = null;
+        }
+      })
+      .onceReady(function () {
+        fs.writeFile('test/scripts/b.js', 'var b = 2;', function () {});
       });
   });
   it('should wrap js but not css', function (done) {

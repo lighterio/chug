@@ -9,10 +9,6 @@ describe('Asset', function () {
     var asset = new Asset('hi.ltl');
     assert.equal(asset.location, 'hi.ltl');
   });
-  it('should have an empty collection of dependents', function () {
-    var asset = new Asset('hi.ltl');
-    assert.equal(JSON.stringify(asset.dependents), '[]');
-  });
   it('should compile and recompile ltl', function() {
     var asset = new Asset('hi.ltl');
     var output;

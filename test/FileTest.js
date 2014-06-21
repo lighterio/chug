@@ -7,9 +7,6 @@ describe('File', function () {
   it('should have its path as its location', function () {
     assert.equal(file.location, 'test/FileTest.js');
   });
-  it('should have an empty collection of dependents', function () {
-    assert.equal(JSON.stringify(file.dependents), '[]');
-  });
   it('should load content', function (done) {
     file.onceReady(function () {
       assert.equal(typeof file.content, 'string');
