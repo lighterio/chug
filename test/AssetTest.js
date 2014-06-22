@@ -133,7 +133,7 @@ describe('Asset', function () {
     chug.setMinifier('css', 'csso');
   });
   it('should auto route', function () {
-    var asset = new Asset('/auto.ltl');
+    var asset = new Asset('/views/auto.ltl');
     asset.setContent('// AUTOROUTE\nhtml\n head>title Tick\n body Boom');
     asset.compile();
   });

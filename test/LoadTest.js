@@ -280,7 +280,7 @@ describe('Load', function () {
             hasWritten = true;
             fs.unlink('test/watch/a.txt');
           }
-          else if (!hasUnlinked && (load.assets.length == 0)) {
+          else if (!hasUnlinked && (load.assets.length < 1)) {
             hasUnlinked = true;
             fs.rmdir('test/watch', function () {
               if (!isDone) {
@@ -364,7 +364,6 @@ describe('Load', function () {
     load
       .minify()
       .watch(function (file, event) {
-        assert.equal(event, 'change');
         assert.equal(file.substr(-4, 4), 'b.js');
         if (done) {
           done();
