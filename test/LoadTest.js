@@ -425,7 +425,7 @@ describe('Load', function () {
         verify(load.getTags(), '');
         verify(load.getTags('blah'), 'blah');
         load.assets.forEach(function (asset) {
-          asset.location = asset.location.replace(/.*\//, '');
+          asset.location = asset.location.replace(/.*[\/\\]/, '');
         })
         var html = load.getTags();
         assert.equal(html.indexOf('src="a.js"') > -1, true);
