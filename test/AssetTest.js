@@ -1,36 +1,36 @@
 var chug = require('../chug');
 var Asset = require('../lib/Asset');
-var assert = require('assert-plus');
+
 chug.setServer(require('express')());
 
 
 describe('Asset', function () {
   it('should should have a location', function () {
     var asset = new Asset('hi.ltl');
-    assert.equal(asset.location, 'hi.ltl');
+    is(asset.location, 'hi.ltl');
   });
   it('should compile and recompile ltl', function() {
     var asset = new Asset('hi.ltl');
     var output;
     asset.setContent('').compile();
     output = asset.compiledContent();
-    assert.equal(output, '');
+    is(output, '');
     asset.setContent('. hi').compile();
     output = asset.compiledContent();
-    assert.equal(output, '<div>hi</div>');
+    is(output, '<div>hi</div>');
     delete chug._compilers.ltl;
   });
   it('should not compile JavaScript', function() {
     var asset = new Asset('hi.js');
     asset.setContent('var msg = "hi";');
     asset.compile();
-    assert.equal(typeof asset.compiledContent, 'undefined');
+    is(typeof asset.compiledContent, 'undefined');
   });
   it('should compile markdown', function() {
     var asset = new Asset('hi.md');
     asset.setContent('# hi');
     asset.compile();
-    assert.equal(asset.compiledContent, '<h1>hi</h1>');
+    is(asset.compiledContent, '<h1>hi</h1>');
   });
   it('should not compile stuff that doesn\'t have a module', function() {
     var asset = new Asset('hi.doesnotexist');
@@ -42,8 +42,8 @@ describe('Asset', function () {
     });
     asset.setContent('hi');
     asset.compile();
-    assert.equal(typeof asset.compiledContent, 'undefined');
-    assert.equal(errors, 1);
+    is(typeof asset.compiledContent, 'undefined');
+    is(errors, 1);
   });
   it('should compile if the module exports as a function', function() {
     var asset = new Asset('hi.ltl');
@@ -58,12 +58,12 @@ describe('Asset', function () {
     // The compiled content shouldn't be saved if it isn't different.
     asset.setContent('COMPILED');
     asset.compile();
-    assert.equal(typeof asset.compiledContent, 'undefined');
+    is(typeof asset.compiledContent, 'undefined');
 
     // If it's different, it should save the compiled content.
     asset.setContent('hi');
     asset.compile();
-    assert.equal(asset.compiledContent, 'COMPILED');
+    is(asset.compiledContent, 'COMPILED');
     require.cache[path].exports = ltl;
     delete chug._compilers.ltl;
   });
@@ -79,7 +79,7 @@ describe('Asset', function () {
       }
     });
     asset.compile();
-    assert.equal(errors, 1);
+    is(errors, 1);
     require.cache[path].exports = ltl;
     delete chug._compilers.ltl;
   });
@@ -95,7 +95,7 @@ describe('Asset', function () {
       calls++;
     }
     asset.setContent('. hi');
-    assert.equal(calls, 0);
+    is(calls, 0);
 
     delete chug._compilers.ltl;
   });
@@ -107,29 +107,29 @@ describe('Asset', function () {
   it('should compile and minify less', function() {
     var asset = new Asset('hi.less');
     asset.setContent('.a { width: (1 + 1) }').compile().minify();
-    assert.equal(asset.minifiedContent, '.a{width:2}');
+    is(asset.minifiedContent, '.a{width:2}');
   });
   it('should compile and minify scss', function() {
     var asset = new Asset('hi.scss');
     asset.setContent('$white: #fff;\n.a{color: $white}').compile().minify();
-    assert.equal(asset.minifiedContent, '.a{color:#fff}');
+    is(asset.minifiedContent, '.a{color:#fff}');
   });
   it('should compile and minify stylus', function() {
     var asset = new Asset('hi.styl');
     asset.setContent('$white = #fff\n.a\n color $white').compile().minify();
-    assert.equal(asset.minifiedContent, '.a{color:#fff}');
+    is(asset.minifiedContent, '.a{color:#fff}');
   });
   it('should minify CSS', function() {
     var asset = new Asset('hi.css');
     asset.setContent('.hidden{display:none;}').minify();
-    assert.equal(/:/.test(asset.minifiedContent), true);
-    assert.equal(/;/.test(asset.minifiedContent), false);
+    is(/:/.test(asset.minifiedContent), true);
+    is(/;/.test(asset.minifiedContent), false);
     asset.setContent('.hidden{display:none}').minify();
-    assert.equal(/:/.test(asset.minifiedContent), true);
-    assert.equal(/;/.test(asset.minifiedContent), false);
+    is(/:/.test(asset.minifiedContent), true);
+    is(/;/.test(asset.minifiedContent), false);
     chug.setMinifier('css', 'clean-css');
     asset.setContent('.hidden{display:none;}').minify();
-    assert.equal(/;/.test(asset.minifiedContent), false);
+    is(/;/.test(asset.minifiedContent), false);
     chug.setMinifier('css', 'csso');
   });
   it('should auto route', function () {
@@ -141,7 +141,7 @@ describe('Asset', function () {
     var asset = new Asset('/auto.ltl');
     asset.setContent('// AUTOROUTE {"boom": "BOOM!"}\nhtml\n head>title Tick\n body ${boom}');
     asset.compile();
-    assert.equal(asset.context.boom, 'BOOM!');
+    is(asset.context.boom, 'BOOM!');
   });
   it('should get content', function(done) {
     function verifyContents(asset, expected) {
@@ -149,7 +149,7 @@ describe('Asset', function () {
         + asset.getCompiledContent()
         + asset.getMinifiedContent();
       concat = concat.replace(/# NOWRAP\n/g, '');
-      assert.equal(concat, expected);
+      is(concat, expected);
     }
     chug.enableShrinking();
     chug._shrinker.reset();
@@ -172,7 +172,7 @@ describe('Asset', function () {
     chug._shrinker.reset();
     chug._shrinker.replacementCharacters = 'ab';
     var shrunken = chug._shrinker.shrink('_AA _BB _CC _DD _EE _FF _GG _AA');
-    assert.equal(shrunken, 'a b aa ab ba bb aaa a');
+    is(shrunken, 'a b aa ab ba bb aaa a');
     chug._shrinker = null;
   });
   it('should shrink an anonymous function', function () {
@@ -185,7 +185,7 @@ describe('Asset', function () {
     };
     var anon = new Asset('test.temp');
     anon.setContent('_TEMP').compile().minify();
-    assert.equal(/'a'/.test(anon.getMinifiedContent().toString()), true);
+    is(/'a'/.test(anon.getMinifiedContent().toString()), true);
     chug._shrinker = null;
     delete chug._compilers.temp;
   });
@@ -208,7 +208,7 @@ describe('Asset', function () {
     asset
       .cull('env', 'dev')
       .cull('target', 'chrome');
-    assert.equal(asset.getCompiledContent(),
+    is(asset.getCompiledContent(),
       'var env = prod;\n\n' +
       '  env = "dev";\n\n\n\n\n' +
       '  console.log("dev mode");\n\n');

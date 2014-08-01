@@ -144,11 +144,6 @@ api.setMinifier = function setMinifier(language, moduleName) {
 };
 
 /**
- * The shrinker replaces names like _NAME with shorter names.
- */
-api._shrinker;
-
-/**
  * Enable the shrinker.
  */
 api.enableShrinking = function() {

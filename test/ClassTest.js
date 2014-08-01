@@ -1,6 +1,5 @@
 var chug = require('../chug');
 var Class = require('../lib/Class');
-var assert = require('assert-plus');
 
 describe('Class', function () {
   it('should be extendable', function () {
@@ -14,7 +13,7 @@ describe('Class', function () {
     });
     var fido = new Dog('Fido');
     fido.bark(function (message) {
-      assert.equal(message, 'Fido says "woof!"');
+      is(message, 'Fido says "woof!"');
     });
   });
 });

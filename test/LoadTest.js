@@ -1,5 +1,4 @@
 var chug = require('../chug');
-var assert = require('assert-plus');
 var fs = require('fs');
 var http = require('http');
 var zlib = require('zlib');
@@ -36,12 +35,12 @@ var mockStat = function (path, callback) {
 describe('Load', function () {
   it('should load nothing if no path is passed', function () {
     var empty = chug();
-    assert.equal(empty.assets.length, 0);
+    is(empty.assets.length, 0);
   });
   it('should load views', function (done) {
     var views = chug('test/views');
     views.onceReady(function () {
-      assert.equal(views.assets.length, 2);
+      is(views.assets.length, 2);
       var hasCachedItems = false;
 
       // Pollute Object so we'll touch hasOwnProperty code paths.
@@ -51,7 +50,7 @@ describe('Load', function () {
       });
       delete Object.prototype.polluted;
 
-      assert.equal(hasCachedItems, true);
+      is(hasCachedItems, true);
       done();
     });
   });
@@ -61,12 +60,12 @@ describe('Load', function () {
       errors++;
     }});
     chug({});
-    assert.equal(errors, 1);
+    is(errors, 1);
   });
   it('should load views as an array', function (done) {
     var views = chug(['test/views/hello.ltl', 'test/views/base/page.ltl']);
     views.onceReady(function () {
-      assert.equal(views.assets.length, 2);
+      is(views.assets.length, 2);
       done();
     });
   });
@@ -88,7 +87,7 @@ describe('Load', function () {
     var stat = fs.stat;
     fs.stat = mockStat;
     var temp = chug('test/nonexistent');
-    assert.equal(temp.assets.length, 1);
+    is(temp.assets.length, 1);
     fs.readdir = readdir;
     fs.stat = stat;
   });
@@ -106,7 +105,7 @@ describe('Load', function () {
       }
     });
     chug('test/nonexistent');
-    assert.equal(errors, 1);
+    is(errors, 1);
     fs.readdir = readdir;
     fs.stat = stat;
   });
@@ -114,13 +113,13 @@ describe('Load', function () {
     var count = 0;
     chug('test/views')
       .each(function (view) {
-        assert.equal(view.content.length > 0, true);
+        is(view.content.length > 0, true);
         ++count;
       })
       .then(function () {
-        assert.equal(count, 2);
-        assert.equal(this.assets.length, 2);
-        assert.equal(this.watchablePaths.length, 2);
+        is(count, 2);
+        is(this.assets.length, 2);
+        is(this.watchablePaths.length, 2);
         done();
       });
   });
@@ -128,7 +127,7 @@ describe('Load', function () {
     chug('test/views/hello.ltl')
       .compile()
       .each(function (view) {
-        assert.func(view.compiledContent);
+        is.function(view.compiledContent);
       })
       .then(done);
   });
@@ -138,26 +137,26 @@ describe('Load', function () {
   it('should cull content', function (done) {
     chug.cache.clear();
     chug('test/views/hello.ltl').cull().compile().each(function (h) {
-      assert.equal(h.cullTarget, 'content');
+      is(h.cullTarget, 'content');
       done();
     });
   });
   it('should cull compiled content', function (done) {
     chug.cache.clear();
     chug('test/scripts/a.coffee').compile().cull().each(function (a) {
-      assert.equal(a.cullTarget, 'compiledContent');
+      is(a.cullTarget, 'compiledContent');
       done();
     });
   });
   it('should not cull binary content', function (done) {
     chug('test/icons/chug.ico').cull().each(function (i) {
-      assert.equal(typeof i[i.cullTarget], 'object');
+      is(typeof i[i.cullTarget], 'object');
       done();
     });
   });
   it('should not gzip binary content', function (done) {
     chug('test/icons/chug.ico').gzip().each(function (i) {
-      assert.equal(typeof i[i.gzippedContent], 'undefined');
+      is(typeof i[i.gzippedContent], 'undefined');
       done();
     });
   });
@@ -174,8 +173,8 @@ describe('Load', function () {
       .then(function () {
         var first = scripts.assets[0];
         var cached = chug.cache.get('/core.js');
-        assert.equal(first.content, cached.content);
-        assert.equal(first.content.split('=').length, 4);
+        is(first.content, cached.content);
+        is(first.content.split('=').length, 4);
         done();
       });
   });
@@ -183,17 +182,20 @@ describe('Load', function () {
     chug('test/scripts')
       .compile()
       .concat('/core.js')
+      .then(function () {
+        chug.setServer(express);
+      })
       .route()
       .then(function () {
         http.get('http://127.0.0.1:8999/core.js', function (response) {
           response.on('data', function (chunk) {
             var data = '' + chunk;
-            assert.equal(/var a;/.test(data), true);
+            is(/var a;/.test(data), true);
             http.get('http://127.0.0.1:8999/core.js?v=1234', function (response) {
               response.on('data', function (chunk) {
                 var data = '' + chunk;
-                assert.equal(/var a;/.test(data), true);
-                assert.equal(!!response.headers.expires, true);
+                is(/var a;/.test(data), true);
+                is.defined(response.headers.expires);
                 done();
               });
             });
@@ -202,18 +204,20 @@ describe('Load', function () {
       });
   });
   it('should route ltl', function (done) {
-    chug.setServer(express);
     chug.enableShrinking();
     chug('test/views')
       .compile({space: '  '})
       .minify()
+      .then(function () {
+        chug.setServer(express);
+      })
       .route()
       .then(function () {
         chug._shrinker = null;
         http.get('http://127.0.0.1:8999/test/views/hello', function (response) {
           response.on('data', function (chunk) {
             var data = '' + chunk;
-            assert.equal(/DOCTYPE/.test(data), true);
+            is(/DOCTYPE/.test(data), true);
             done();
           });
         });
@@ -230,7 +234,7 @@ describe('Load', function () {
     chug('test/scripts/b.js')
       .route()
       .then(function () {
-        assert.equal(errors, 1);
+        is(errors, 1);
         done();
       });
   });
@@ -240,11 +244,12 @@ describe('Load', function () {
     delete require.cache[decorations];
     require(decorations);
     za.listen(8998);
-
-    chug.setServer(za);
     chug('test/scripts/b.js')
       .minify()
       .gzip()
+      .then(function () {
+        chug.setServer(za);
+      })
       .route()
       .then(function () {
         http.get({
@@ -256,7 +261,7 @@ describe('Load', function () {
         }, function (response) {
           response.on('data', function (chunk) {
             zlib.gunzip(chunk, function (err, data) {
-              assert.equal('' + data, 'var b=2;');
+              is('' + data, 'var b=2;');
               za.close();
               delete http.ServerResponse.prototype.zip;
               done();
@@ -307,7 +312,7 @@ describe('Load', function () {
             concat.replayableActions = [];
             done();
           }
-        }
+        };
       });
       load.watch(function () {
         fs.unlink('test/views/DELETE_ME.ltl', function () {});
@@ -322,8 +327,8 @@ describe('Load', function () {
     chug('test/scripts')
       .watch()
       .watch(function () {
-        assert.equal(this.assets.length, 3);
         if (!isDone) {
+          is(this.assets.length, 3);
           isDone = true;
           done();
         }
@@ -345,7 +350,7 @@ describe('Load', function () {
         .then(function () {
           fs.watch('test/empty', function () {
               fs.unlink('test/empty/___bak__', function () {
-                assert.equal(called, false);
+                is(called, false);
                 fs.rmdir('test/empty', function () {
                   if (!isDone) {
                     isDone = true;
@@ -353,7 +358,7 @@ describe('Load', function () {
                   }
                 });
               });
-          })
+          });
           fs.writeFile('test/empty/___bak___', 'TEST');
         });
     });
@@ -364,7 +369,7 @@ describe('Load', function () {
     load
       .minify()
       .watch(function (file, event) {
-        assert.equal(file.substr(-4, 4), 'b.js');
+        is(file.substr(-4, 4), 'b.js');
         if (done) {
           done();
           done = null;
@@ -403,13 +408,13 @@ describe('Load', function () {
   it('should return locations', function (done) {
     var scripts = chug('test/scripts')
       .getLocations(function (locations) {
-        assert.equal(locations.length, 3);
+        is(locations.length, 3);
       })
       .then(function () {
-        assert.equal(scripts.getLocations().length, 3);
+        is(scripts.getLocations().length, 3);
         done();
       });
-    assert.equal(scripts.getLocations().length, 0);
+    is(scripts.getLocations().length, 0);
   });
   it('should return tags', function (done) {
     var load = chug([
@@ -426,28 +431,28 @@ describe('Load', function () {
         verify(load.getTags('blah'), 'blah');
         load.assets.forEach(function (asset) {
           asset.location = asset.location.replace(/.*[\/\\]/, '');
-        })
+        });
         var html = load.getTags();
-        assert.equal(html.indexOf('src="a.js"') > -1, true);
+        is(html.indexOf('src="a.js"') > -1, true);
         done();
       });
     function verify(html, path) {
-      assert.equal(html.indexOf('<script src="' + path + '/test/scripts/a.js"></script>') > -1, true);
-      assert.equal(html.indexOf('<script src="' + path + '/test/scripts/b.js"></script>') > -1, true);
-      assert.equal(html.indexOf('<link rel="stylesheet" href="' + path + '/test/styles/a.css">') > -1, true);
-      assert.equal(html.indexOf('<link rel="stylesheet" href="' + path + '/test/styles/b.css">') > -1, true);
-      assert.equal(html.length, 182 + path.length * 4);
+      is(html.indexOf('<script src="' + path + '/test/scripts/a.js"></script>') > -1, true);
+      is(html.indexOf('<script src="' + path + '/test/scripts/b.js"></script>') > -1, true);
+      is(html.indexOf('<link rel="stylesheet" href="' + path + '/test/styles/a.css">') > -1, true);
+      is(html.indexOf('<link rel="stylesheet" href="' + path + '/test/styles/b.css">') > -1, true);
+      is(html.length, 182 + path.length * 4);
     }
-    assert.equal(load.getTags(), '');
+    is(load.getTags(), '');
   });
   it('should require modules', function (done) {
     chug('test/modules')
       .require()
       .then(function () {
-        assert.equal(marco, 'polo');
+        is(marco, 'polo');
       })
       .require(function (module) {
-        assert.equal(module.name, 'marco');
+        is(module.name, 'marco');
         done();
       });
   });
@@ -484,10 +489,10 @@ describe('Load', function () {
     chug('mock')
       .then(function () {
         var joined = this.getLocations().join(',');
-        assert.equal(joined, cwd + '/mock/a.js,' + cwd + '/mock/b.js,' + cwd + '/mock/c.js');
+        is(joined, cwd + '/mock/a.js,' + cwd + '/mock/b.js,' + cwd + '/mock/c.js');
         chug.cache.clear();
         chug('test/mock').concat('c').each(function (asset) {
-          assert.equal(asset.content, 'var a = 1;var b = 2;var c = 3;');
+          is(asset.content, 'var a = 1;var b = 2;var c = 3;');
           fs.readdir = readdir;
           fs.stat = stat;
           fs.readFile = readFile;
@@ -523,7 +528,7 @@ describe('Load', function () {
     };
     chug('mock').ignore('node_modules').ignore(/ignore/)
       .then(function (load) {
-        assert.equal(this.assets.length, 1);
+        is(this.assets.length, 1);
         fs.readdir = readdir;
         fs.stat = stat;
         fs.readFile = readFile;

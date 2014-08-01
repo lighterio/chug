@@ -1,4 +1,3 @@
-var assert = require('assert-plus');
 var chug = require('../chug');
 
 require('zeriousify').test();
@@ -10,41 +9,41 @@ describe('API', function () {
     chug.onceReadyQueue = [];
   });
   it('should be a function', function () {
-    assert.func(chug);
+    is.function(chug);
   });
   describe('version', function () {
     var packageVersion = require('../package.json').version;
     it('should be ' + packageVersion, function () {
       var chugVersion = chug.version;
-      assert.equal(chugVersion, packageVersion);
+      is(chugVersion, packageVersion);
     });
   });
   describe('setCompiler', function () {
     it('should be a function', function () {
-      assert.func(chug.setCompiler);
+      is.function(chug.setCompiler);
     });
     it('should set a compiler', function () {
       chug.setCompiler('coffee', 'coffee-script');
-      assert.func(chug._compilers.coffee.compile);
+      is.function(chug._compilers.coffee.compile);
     });
   });
   describe('setMinifier', function () {
     it('should be a function', function () {
-      assert.func(chug.setMinifier);
+      is.function(chug.setMinifier);
     });
     it('should set a minifier', function () {
       chug.setMinifier('js', 'uglify-js');
-      assert.func(chug._minifiers.js.minify);
+      is.function(chug._minifiers.js.minify);
     });
   });
   describe('setServer', function () {
     var server = require('express')();
     it('should be a function', function () {
-      assert.func(chug.setServer);
+      is.function(chug.setServer);
     });
     it('should set the server', function () {
       chug.setServer(server);
-      assert.func(chug._server.get);
+      is.function(chug._server.get);
     });
   });
 });

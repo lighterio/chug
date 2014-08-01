@@ -81,9 +81,10 @@ Runs `minify` on each asset, using `each`.
 Runs `gzip` on each asset, using `each`.
 
 ### .watch()
-Puts a `fs.watch` on the files and directories that were
-added to the `Load`. When changes occur, the affected assets are
-reloaded, then the load re-runs its chain of actions.
+Puts a `fs.watch` on the files and directories that were added to the `Load`.
+When changes occur, the affected assets are reloaded, then the load re-runs its
+chain of actions. Additionally, the location of the most recently modified
+asset is stored in `chug.changedLocation`.
 
 ### .require()
 Loads each asset as a Node.js module.
