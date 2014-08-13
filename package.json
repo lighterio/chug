@@ -17,7 +17,7 @@
   "version": "0.2.0",
   "main": "chug.js",
   "homepage": "http://lighter.io/chug",
-  "repository": "git://github.com/zerious/chug.git",
+  "repository": "git://github.com/lighterio/chug.git",
   "author": "Sam Eubank <sameubank@gmail.com>",
   "contributors": [
     "Sam Eubank <sameubank@gmail.com>"
@@ -40,26 +40,24 @@
     "clean-css": "2.2.11",
     "coffee-script": "1.7.1",
     "coveralls": "2.11.1",
-    "exam": "0.0.4",
+    "exam": "0.0.5",
     "express": "4.7.2",
     "istanbul": "0.3.0",
     "less": "1.7.4",
     "ltl": "0.1.13",
     "markdown": "0.5.0",
-    "mocha": "1.21.3",
     "node-sass": "0.9.3",
     "stylus": "0.47.3",
     "za": "0.0.18",
-    "zeriousify": "0.1.7",
-    "assert-plus": "0.1.5"
+    "zeriousify": "0.1.9"
   },
   "bugs": {
-    "url": "http://github.com/zerious/chug/issues"
+    "url": "http://github.com/lighterio/chug/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "http://github.com/zerious/chug/blob/master/MIT-LICENSE.md"
+      "url": "http://github.com/lighterio/chug/blob/master/MIT-LICENSE.md"
     }
   ]
 }

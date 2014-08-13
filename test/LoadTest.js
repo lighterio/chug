@@ -73,10 +73,10 @@ describe('Load', function () {
     chug('./test/non-existent-path');
   });
   it('should resolve a node_modules path', function () {
-    chug('node_modules/mocha/mocha.css');
+    chug('node_modules/istanbul/lib/hook.js');
   });
   it('should load an absolute path', function () {
-    var path = require.resolve('mocha');
+    var path = require.resolve('exam');
     chug(path);
   });
   it('should skip . and .. "files"', function() {

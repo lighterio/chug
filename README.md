@@ -1,10 +1,10 @@
 # Chug
 
  [![NPM Version](https://badge.fury.io/js/chug.png)](http://badge.fury.io/js/chug)
- [![Build Status](https://travis-ci.org/zerious/chug.png?branch=master)](https://travis-ci.org/zerious/chug)
- [![Code Coverage](https://coveralls.io/repos/zerious/chug/badge.png?branch=master)](https://coveralls.io/r/zerious/chug)
- [![Dependencies](https://david-dm.org/zerious/chug.png?theme=shields.io)](https://david-dm.org/zerious/chug)
- [![Support](http://img.shields.io/gittip/zerious.png)](https://www.gittip.com/zerious/)
+ [![Build Status](https://travis-ci.org/lighterio/chug.png?branch=master)](https://travis-ci.org/lighterio/chug)
+ [![Code Coverage](https://coveralls.io/repos/lighterio/chug/badge.png?branch=master)](https://coveralls.io/r/lighterio/chug)
+ [![Dependencies](https://david-dm.org/lighterio/chug.png?theme=shields.io)](https://david-dm.org/lighterio/chug)
+ [![Support](http://img.shields.io/gittip/zerious.png)](https://www.gittip.com/lighterio/)
 
 Chug is a caching build system. It compiles, minifies, and caches your
 project's assets so they can be served directly from cache, eliminating
