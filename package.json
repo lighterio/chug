@@ -28,9 +28,9 @@
   "scripts": {
     "test": "./node_modules/exam/exam.js",
     "retest": "./node_modules/exam/exam.js --watch",
-    "cover": "istanbul cover node_modules/exam/exam.js",
+    "cover": "istanbul cover ./node_modules/exam/exam.js",
     "report": "open coverage/lcov-report/index.html",
-    "coveralls": "istanbul cover node_modules/exam/exam.js --report lcovonly -- -R spec && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
+    "coveralls": "istanbul cover ./node_modules/exam/exam.js --report lcovonly -- -R spec && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
   },
   "dependencies": {
     "uglify-js": "2.4.15",
