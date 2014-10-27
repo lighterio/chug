@@ -10,14 +10,12 @@
 .DS_Store
 .cache
 .gitignore
+.npmignore
+.travis.yml
 pids
 logs
 results
 coverage
 node_modules
 test
-benchmarks
 build
-.travis.yml
-
-.npmignore

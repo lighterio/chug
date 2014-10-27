@@ -81,6 +81,11 @@ Runs `minify` on each asset, using `each`.
 ### .gzip()
 Runs `gzip` on each asset, using `each`.
 
+### .replace((string|RegExp) pattern, (string|function) replacement)
+Replaces the contents of each asset using
+`string.replace(pattern, replacement)`. This includes base, compiled,
+minified, shrunken and gzipped contents.
+
 ### .watch()
 Puts a `fs.watch` on the files and directories that were added to the `Load`.
 When changes occur, the affected assets are reloaded, then the load re-runs its
