@@ -5,6 +5,7 @@ chug.setServer(require('express')());
 
 
 describe('Asset', function () {
+
   it('should should have a location', function () {
     var asset = new Asset('hi.ltl');
     is(asset.location, 'hi.ltl');
@@ -213,4 +214,32 @@ describe('Asset', function () {
       '  env = "dev";\n\n\n\n\n' +
       '  console.log("dev mode");\n\n');
   });
+
+  describe('.replace', function () {
+    it('replaces content', function () {
+      var asset = new Asset('test.js');
+      var content = 'alert("This is a test");';
+      asset.setContent(content);
+      asset.replace(/test/, 'success!');
+      content = asset.getContent();
+      is(content, 'alert("This is a success!");');
+    });
+    it('replaces minified content', function () {
+      var asset = new Asset('test.js');
+      var content = 'alert( "This is a test" );';
+      asset.setContent(content).minify();
+      asset.replace(/test/, 'success!');
+      content = asset.getMinifiedContent();
+      is.in(content, 'success');
+    });
+    it('calls .gzip if it has been called before', function (done) {
+      var asset = new Asset('test.js');
+      var content = 'alert( "This is a test" );';
+      asset.setContent(content);
+      asset.gzippedContent = 'ZIPPED!';
+      mock(asset, {gzip: done});
+      asset.replace(/test/, 'gzip');
+    });
+  });
+
 });

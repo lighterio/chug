@@ -16,6 +16,7 @@ results
 coverage
 node_modules
 test
+benchmarks
 build
 .travis.yml
 
