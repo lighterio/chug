@@ -25,9 +25,13 @@ for (var property in waiter) {
 }
 
 /**
- * Expose the version to module users.
+ * Expose the Chug version via package.json lazy loading.
  */
-api.version = require('./package.json').version;
+Object.defineProperty(api, 'version', {
+  get: function () {
+    return require('./package.json').version;
+  }
+});
 
 /**
  * Don't walk upward, and ignore DS_Store.

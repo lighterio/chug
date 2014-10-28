@@ -240,7 +240,7 @@ describe('Load', function () {
   });
   it('should compress when routing with Za', function (done) {
     var za = require('za')();
-    var decorations = require.resolve('za/lib/http');
+    var decorations = require.resolve('za/lib/Response');
     delete require.cache[decorations];
     require(decorations);
     za.listen(8998);
