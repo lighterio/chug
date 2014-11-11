@@ -1,9 +1,9 @@
 var chug = require('../chug');
-var Class = require('../lib/Class');
+var Type = require('../common/object/type');
 
-describe('Class', function () {
+describe('Type', function () {
   it('should be extendable', function () {
-    var Dog = Class.extend({
+    var Dog = Type.extend({
       init: function (name) {
         this.name = name;
       },

@@ -110,6 +110,9 @@ The optional `load` argument, if specified, will cause the new
 asset to be added to an existing load rather than the default
 behavior of returning a new load with a single asset.
 
+### .sort(customSortFunction)
+Apply a custom sorting function for ordering the assets in a load.
+
 ### .shrink()
 Builds a dictionary of terms that match `/_[A-Z][_A-Z0-9]+/`,
 then replaces occurrences of the terms with short names containing

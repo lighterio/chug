@@ -1,7 +1,7 @@
-var chug = require('../chug');
 var fs = require('fs');
 var http = require('http');
 var zlib = require('zlib');
+var chug = require('../chug');
 var Asset = require('../lib/Asset');
 var exec = require('child_process').exec;
 var cwd = process.cwd();
@@ -487,11 +487,12 @@ describe('Load', function () {
       }
     };
     chug('mock')
+      .sort()
       .then(function () {
         var joined = this.getLocations().join(',');
         is(joined, cwd + '/mock/a.js,' + cwd + '/mock/b.js,' + cwd + '/mock/c.js');
         chug.cache.clear();
-        chug('test/mock').concat('c').each(function (asset) {
+        chug('test/mock').sort().concat('c').each(function (asset) {
           is(asset.content, 'var a = 1;var b = 2;var c = 3;');
           fs.readdir = readdir;
           fs.stat = stat;

@@ -1,9 +1,9 @@
-var Class = require('./lib/Class');
-var Waiter = require('./lib/Waiter');
-var Asset = require('./lib/Asset');
-var File = require('./lib/File');
-var Load = require('./lib/Load');
-var Cache = require('./lib/Cache');
+var Type = require(__dirname + '/common/object/type');
+var Waiter = require(__dirname + '/lib/Waiter');
+var Asset = require(__dirname + '/lib/Asset');
+var File = require(__dirname + '/lib/File');
+var Load = require(__dirname + '/lib/Load');
+var Cache = require(__dirname + '/lib/Cache');
 
 /**
  * Expose a function that creates a new "Load" of files.
@@ -29,7 +29,7 @@ for (var property in waiter) {
  */
 Object.defineProperty(api, 'version', {
   get: function () {
-    return require('./package.json').version;
+    return require(__dirname + '/package.json').version;
   }
 });
 
@@ -151,7 +151,7 @@ api.setMinifier = function setMinifier(language, moduleName) {
  * Enable the shrinker.
  */
 api.enableShrinking = function() {
-  api._shrinker = require('./lib/shrinker');
+  api._shrinker = require(__dirname + '/lib/shrinker');
   api.cache.each(function (asset) {
     asset.minify();
   });
