@@ -10,7 +10,7 @@
     "clean-css": "2.2.11",
     "coffee-script": "1.7.1",
     "coveralls": "2.11.1",
-    "exam": "^0.1.5",
+    "exam": "^0.1.6",
     "express": "4.7.2",
     "istanbul": "0.3.0",
     "less": "1.7.4",
@@ -18,8 +18,8 @@
     "markdown": "0.5.0",
     "node-sass": "0.9.3",
     "stylus": "0.47.3",
-    "za": "^0.1.0",
-    "zeriousify": "^0.1.10"
+    "za": "^0.1.1",
+    "zeriousify": "^0.1.12"
   },
   "keywords": [
     "cache",
