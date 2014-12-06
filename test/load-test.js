@@ -2,9 +2,10 @@ var fs = require('fs');
 var http = require('http');
 var zlib = require('zlib');
 var chug = require('../chug');
-var Asset = require('../lib/Asset');
+var Asset = require('../lib/asset');
 var exec = require('child_process').exec;
 var cwd = process.cwd();
+var is = global.is || require('exam/lib/is');
 
 var express = require('express')();
 express.listen(8999);
@@ -240,7 +241,7 @@ describe('Load', function () {
   });
   it('should compress when routing with Za', function (done) {
     var za = require('za')();
-    var decorations = require.resolve('za/lib/Response');
+    var decorations = require.resolve('za/lib/response');
     delete require.cache[decorations];
     require(decorations);
     za.listen(8998);

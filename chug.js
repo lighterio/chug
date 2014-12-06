@@ -34,7 +34,7 @@ Object.defineProperty(api, 'version', {
 });
 
 /**
- * Don't walk upward, and ignore DS_Store.
+ * Don't walk upward, and ignore DS_Store, etc.
  */
 api._ignorePattern = /^(\.+)(|DS_Store|gitignore)$/;
 

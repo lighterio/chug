@@ -1,10 +1,11 @@
 var chug = require('../chug');
-var File = require('../lib/File');
+var File = require('../lib/file');
+var is = global.is || require('exam/lib/is');
 
 describe('File', function () {
-  var file = new File('test/FileTest.js');
+  var file = new File('test/file-test.js');
   it('should have its path as its location', function () {
-    is(file.location, 'test/FileTest.js');
+    is(file.location, 'test/file-test.js');
   });
   it('should load content', function (done) {
     file.onceReady(function () {
