@@ -1,9 +1,9 @@
 var Type = require(__dirname + '/common/object/type');
-var Waiter = require(__dirname + '/lib/Waiter');
-var Asset = require(__dirname + '/lib/Asset');
-var File = require(__dirname + '/lib/File');
-var Load = require(__dirname + '/lib/Load');
-var Cache = require(__dirname + '/lib/Cache');
+var Waiter = require(__dirname + '/lib/waiter');
+var Asset = require(__dirname + '/lib/asset');
+var File = require(__dirname + '/lib/file');
+var Load = require(__dirname + '/lib/load');
+var Cache = require(__dirname + '/lib/cache');
 
 /**
  * Expose a function that creates a new "Load" of files.
