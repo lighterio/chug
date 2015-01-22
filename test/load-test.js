@@ -7,9 +7,7 @@ var exec = require('child_process').exec;
 var cwd = process.cwd();
 var is = global.is || require('exam/lib/is');
 
-var express = require('express')();
-express.listen(8999);
-chug.setServer(express);
+var express, server;
 chug.enableShrinking();
 
 var mockStat = function (path, callback) {
@@ -34,10 +32,25 @@ var mockStat = function (path, callback) {
 };
 
 describe('Load', function () {
+
+  before(function () {
+    express = require('express')();
+    server = express.listen(8999);
+    chug.setServer(express);
+  });
+
+  after(function () {
+    if (server) {
+      server.close();
+      server = null;
+    }
+  });
+
   it('should load nothing if no path is passed', function () {
     var empty = chug();
     is(empty.assets.length, 0);
   });
+
   it('should load views', function (done) {
     var views = chug('test/views');
     views.onceReady(function () {
@@ -55,6 +68,7 @@ describe('Load', function () {
       done();
     });
   });
+
   it('should log an error for an invalid location', function () {
     var errors = 0;
     chug.setLogger({error: function () {
@@ -63,6 +77,7 @@ describe('Load', function () {
     chug({});
     is(errors, 1);
   });
+
   it('should load views as an array', function (done) {
     var views = chug(['test/views/hello.ltl', 'test/views/base/page.ltl']);
     views.onceReady(function () {
@@ -70,16 +85,20 @@ describe('Load', function () {
       done();
     });
   });
+
   it('should ignore a non-existent path', function () {
     chug('./test/non-existent-path');
   });
+
   it('should resolve a node_modules path', function () {
     chug('node_modules/istanbul/lib/hook.js');
   });
+
   it('should load an absolute path', function () {
     var path = require.resolve('exam');
     chug(path);
   });
+
   it('should skip . and .. "files"', function() {
     var readdir = fs.readdir;
     fs.readdir = function (dir, callback) {
@@ -92,6 +111,7 @@ describe('Load', function () {
     fs.readdir = readdir;
     fs.stat = stat;
   });
+
   it('should log an error when a directory can\'t be read', function() {
     var readdir = fs.readdir;
     fs.readdir = function (dir, callback) {
@@ -110,6 +130,7 @@ describe('Load', function () {
     fs.readdir = readdir;
     fs.stat = stat;
   });
+
   it('should iterate over views', function (done) {
     var count = 0;
     chug('test/views')
@@ -124,6 +145,7 @@ describe('Load', function () {
         done();
       });
   });
+
   it('should compile views', function (done) {
     chug('test/views/hello.ltl')
       .compile()
@@ -132,9 +154,11 @@ describe('Load', function () {
       })
       .then(done);
   });
+
   it('should compile and minify', function (done) {
     chug('test/views/hello.ltl').compile().minify().then(done);
   });
+
   it('should cull content', function (done) {
     chug.cache.clear();
     chug('test/views/hello.ltl').cull().compile().each(function (h) {
@@ -142,6 +166,7 @@ describe('Load', function () {
       done();
     });
   });
+
   it('should cull compiled content', function (done) {
     chug.cache.clear();
     chug('test/scripts/a.coffee').compile().cull().each(function (a) {
@@ -149,18 +174,21 @@ describe('Load', function () {
       done();
     });
   });
+
   it('should not cull binary content', function (done) {
     chug('test/icons/chug.ico').cull().each(function (i) {
       is(typeof i[i.cullTarget], 'object');
       done();
     });
   });
+
   it('should not gzip binary content', function (done) {
     chug('test/icons/chug.ico').gzip().each(function (i) {
       is(typeof i[i.gzippedContent], 'undefined');
       done();
     });
   });
+
   it('should concatenate scripts', function (done) {
     chug('test/scripts')
       .concat()
@@ -168,6 +196,7 @@ describe('Load', function () {
         done();
       });
   });
+
   it('should concatenate scripts with a name', function (done) {
     var scripts = chug('test/scripts')
       .concat('/core.js')
@@ -179,6 +208,7 @@ describe('Load', function () {
         done();
       });
   });
+
   it('should serve compiled CoffeeScript with Express', function (done) {
     chug('test/scripts')
       .compile()
@@ -204,6 +234,7 @@ describe('Load', function () {
         });
       });
   });
+
   it('should route ltl', function (done) {
     chug.enableShrinking();
     chug('test/views')
@@ -224,6 +255,7 @@ describe('Load', function () {
         });
       });
   });
+
   it('should not route until a server is set', function (done) {
     chug._server = null;
     var errors = 0;
@@ -239,6 +271,7 @@ describe('Load', function () {
         done();
       });
   });
+
   it('should compress when routing with Za', function (done) {
     var za = require('za')();
     var decorations = require.resolve('za/lib/response');
@@ -271,6 +304,7 @@ describe('Load', function () {
         });
       });
   });
+
   it('should watch a directory', function (done) {
     var hasWritten = false;
     var hasUnlinked = false;
@@ -302,6 +336,7 @@ describe('Load', function () {
         });
     });
   });
+
   it('should watch views', function (done) {
     fs.unlink('test/views/DELETE_ME.ltl', function () {
       var concatCalls = 0;
@@ -323,6 +358,7 @@ describe('Load', function () {
       });
     });
   });
+
   it('should watch scripts', function (done) {
     var isDone = false;
     chug('test/scripts')
@@ -340,6 +376,7 @@ describe('Load', function () {
         fs.writeFile(asset.location, asset.content);
       });
   });
+
   it('should ignore JetBrains backup files', function (done) {
     var isDone = false;
     fs.mkdir('test/empty', function () {
@@ -364,6 +401,7 @@ describe('Load', function () {
         });
     });
   });
+
   it('should watch a single file', function (done) {
     var load = chug(['test/scripts/a.coffee', 'test/scripts/b.js']);
     var changed = '';
@@ -380,6 +418,7 @@ describe('Load', function () {
         fs.writeFile('test/scripts/b.js', 'var b = 2;', function () {});
       });
   });
+
   it('should wrap js but not css', function (done) {
     var load = chug();
     var js = load.addAsset(Asset, 'test.js');
@@ -396,6 +435,7 @@ describe('Load', function () {
       })
       .unwait();
   });
+
   it('should write', function (done) {
     chug('test/scripts/b.js')
       .minify()
@@ -406,6 +446,7 @@ describe('Load', function () {
         done();
       });
   });
+
   it('should return locations', function (done) {
     var scripts = chug('test/scripts')
       .getLocations(function (locations) {
@@ -417,6 +458,7 @@ describe('Load', function () {
       });
     is(scripts.getLocations().length, 0);
   });
+
   it('should return tags', function (done) {
     var load = chug([
       'test/scripts/a.coffee',
@@ -446,6 +488,7 @@ describe('Load', function () {
     }
     is(load.getTags(), '');
   });
+
   it('should require modules', function (done) {
     chug('test/modules')
       .require()
@@ -457,6 +500,7 @@ describe('Load', function () {
         done();
       });
   });
+
   it('should sort files', function (done) {
     var readdir = fs.readdir;
     var stat = fs.stat;
@@ -494,7 +538,7 @@ describe('Load', function () {
         is(joined, cwd + '/mock/a.js,' + cwd + '/mock/b.js,' + cwd + '/mock/c.js');
         chug.cache.clear();
         chug('test/mock').sort().concat('c').each(function (asset) {
-          is(asset.content, 'var a = 1;var b = 2;var c = 3;');
+          is(asset.content, 'var a = 1;;var b = 2;;var c = 3;;');
           fs.readdir = readdir;
           fs.stat = stat;
           fs.readFile = readFile;
@@ -502,6 +546,7 @@ describe('Load', function () {
         });
       });
   });
+
   it('should ignore filenames and patterns', function (done) {
     var readdir = fs.readdir;
     var stat = fs.stat;
