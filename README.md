@@ -7,8 +7,6 @@
 [![Support](https://img.shields.io/gratipay/Lighter.io.svg)](https://gratipay.com/Lighter.io/)
 
 
-# TL;DR
-
 Chug is a caching build system. It compiles, minifies, and caches your
 project's assets so they can be served directly from cache, eliminating
 the unnecessary step of saving your files to a build directory.
@@ -109,6 +107,9 @@ specifies the asset cache key for the newly concatenated asset.
 The optional `load` argument, if specified, will cause the new
 asset to be added to an existing load rather than the default
 behavior of returning a new load with a single asset.
+
+### .sort(customSortFunction)
+Apply a custom sorting function for ordering the assets in a load.
 
 ### .shrink()
 Builds a dictionary of terms that match `/_[A-Z][_A-Z0-9]+/`,

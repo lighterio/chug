@@ -1,6 +1,5 @@
 var chug = require('../chug');
-
-require('zeriousify').test();
+var is = global.is || require('exam/lib/is');
 
 describe('API', function () {
   before(function () {

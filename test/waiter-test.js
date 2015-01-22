@@ -1,5 +1,6 @@
 var chug = require('../chug');
 var Waiter = require('../lib/Waiter');
+var is = global.is || require('exam/lib/is');
 
 describe('Waiter', function () {
   before(function () {
