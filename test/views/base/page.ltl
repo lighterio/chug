@@ -1,5 +1,5 @@
 html
     head>title
         get title
-    body._BODY
+    body._body
         get content

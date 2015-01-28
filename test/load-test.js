@@ -538,7 +538,7 @@ describe('Load', function () {
         is(joined, cwd + '/mock/a.js,' + cwd + '/mock/b.js,' + cwd + '/mock/c.js');
         chug.cache.clear();
         chug('test/mock').sort().concat('c').each(function (asset) {
-          is(asset.content, 'var a = 1;;var b = 2;;var c = 3;;');
+          is(asset.content, 'var a = 1;\nvar b = 2;\nvar c = 3;\n');
           fs.readdir = readdir;
           fs.stat = stat;
           fs.readFile = readFile;
