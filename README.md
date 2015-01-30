@@ -112,11 +112,12 @@ behavior of returning a new load with a single asset.
 Apply a custom sorting function for ordering the assets in a load.
 
 ### .shrink()
-Builds a dictionary of terms that match `/_[A-Z][_A-Z0-9]+/`,
-then replaces occurrences of the terms with short names containing
-one or more lowercase letters. This can be used to replace classes
-and IDs in your minified JS and CSS since they wouldn't be replaced
-by Uglify or CSSO.
+Builds a dictionary of terms that match a pattern, such as having
+a leading underscore: `/_[A-Z][_A-Z0-9]+/i`, then replaces
+occurrences of the terms with short names containing one or more
+lowercase letters. This can be used to replace classes and IDs
+in your minified JS and CSS since they wouldn't be replaced by
+UglifyJS or CSSO.
 
 ### .cull(string key, string value)
 If you would like to designate certain sections of code as applying

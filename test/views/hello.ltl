@@ -2,4 +2,4 @@ call base/page
     set title:
         Hello World!
     set content:
-        p._CONTENT This is a test.
+        p._content This is a test.
