@@ -8,7 +8,7 @@ var Cache = require(__dirname + '/lib/cache');
 /**
  * Expose a function that creates a new "Load" of files.
  */
-var api = module.exports = function load(location) {
+var api = module.exports = function (location) {
   return new Load(location, api);
 };
 
@@ -54,7 +54,7 @@ api._server = null;
 /**
  * Set the Express-like server that will be used for routing.
  */
-api.setServer = function setServer(server) {
+api.setServer = function (server) {
   api._server = server;
   server._cacheBust = Math.round((new Date()).getTime() / 1000);
 };
@@ -67,7 +67,7 @@ api._logger = console;
 /**
  * Set a logger that exposes `logger.error(message)`.
  */
-api.setLogger = function setLogger(logger) {
+api.setLogger = function (logger) {
   api._logger = logger;
 };
 
@@ -100,7 +100,7 @@ api._compilers = {
 /**
  * Set the compiler for a type of file, specifying the module name.
  */
-api.setCompiler = function setCompiler(fileExtension, moduleName) {
+api.setCompiler = function (fileExtension, moduleName) {
   var compiler = false;
   try {
     compiler = require(moduleName);
@@ -141,7 +141,7 @@ api._targetLanguages = {
 /**
  * Set the minifier for a type of file, specifying the module name.
  */
-api.setMinifier = function setMinifier(language, moduleName) {
+api.setMinifier = function (language, moduleName) {
   var minifier = require(moduleName);
   api._minifiers[language] = minifier;
   return minifier;
