@@ -2,7 +2,7 @@
  * Dive asynchronously into a path, and call back with an array of files
  * that exist under it. Do not follow symbolic links.
  *
- * @origin lighter-common/common/fs/dive-file-paths.js
+ * @origin https://github.com/lighterio/lighter-common/common/fs/dive-file-paths.js
  * @version 0.0.1
  */
 

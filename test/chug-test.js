@@ -42,7 +42,7 @@ describe('API', function () {
     });
     it('should set the server', function () {
       chug.setServer(server);
-      is.function(chug._server.get);
+      is.function(chug.server.get);
     });
   });
 });

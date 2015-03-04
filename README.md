@@ -21,7 +21,8 @@ npm install --save chug
 Chug is a function with chaining methods, and you can use it inside your Node
 server. Calls to `chug` return a `Load`, which is a list of assets, very
 similar to the way jQuery returns an object containing a list of DOM elements.
-Operations on a `Load` are chained asynchronously.
+Operations on a `Load` are chained asynchronously, and they iterate over `Asset`
+and `File` objects inside the load.
 
 If your `scripts` directory contains some CoffeeScript that you're using
 along with jQuery, and you want to compile your CS, concatenate it with JS,
@@ -36,8 +37,8 @@ chug.setServer(server);
 chug(['node_modules/jquery/dist/jquery.js', 'scripts'])
   .compile()
   .watch()
-  .concat('/all.js')
-  .route();
+  .concat()
+  .route('/all.js');
 ```
 
 
@@ -100,23 +101,22 @@ servers are supported. If a path is specified, it is used. If
 not, chug will use the asset location as the URL. The asset location
 is either the filePath or a location specified in a `concat` call.
 
-### .concat([string location][, Load load])
+### .concat([Load load])
 Creates a concatenation of all assets from the load on
-which `concat` was called.  The optional `location` argument
-specifies the asset cache key for the newly concatenated asset.
-The optional `load` argument, if specified, will cause the new
-asset to be added to an existing load rather than the default
-behavior of returning a new load with a single asset.
+which `concat` was called.  The optional `load` argument, if
+specified, will cause the new asset to be added to an existing load
+rather than the default behavior of returning a new load with a single
+asset.
 
 ### .sort(customSortFunction)
 Apply a custom sorting function for ordering the assets in a load.
 
 ### .shrink()
-Builds a dictionary of terms that match a pattern, such as having
-a leading underscore: `/_[A-Z][_A-Z0-9]+/i`, then replaces
-occurrences of the terms with short names containing one or more
-lowercase letters. This can be used to replace classes and IDs
-in your minified JS and CSS since they wouldn't be replaced by
+Uses Chug's shrinker to build a dictionary of terms that match a
+pattern, such as having a leading underscore: `/_[A-Z][_A-Z0-9]+/i`.
+Each occurrence is replaced with a short name containing one or more
+lowercase letters. This can be used to replace classes, IDs and
+properties in minified JS and CSS since they wouldn't be replaced by
 UglifyJS or CSSO.
 
 ### .cull(string key, string value)
@@ -175,12 +175,12 @@ The chug function is also an object with several methods.
 When you pass an Express-like server to `setServer`, you can then call
 `route` on any assets that you'd like to route via `server.get`.
 
-### setLogger(Object logger)
+### setLog(Object log)
 
-Set a logger that exposes `logger.error(message)` to override the
-default console logger.
+Set a log that exposes `log.error(message)` to override the
+default console log.
 
-### setCompiler(string fileExtension, string moduleName)
+### setCompiler(string fileExtension, string moduleName, targetLanguage)
 
 If you are using a file extension whose compiler has the same
 name, then chug will require it automagically.
@@ -197,6 +197,9 @@ extension, you can call `setCompiler` first.
 chug.setCompiler('md', 'marked');
 chug('README.md').compile();
 ```
+
+In addition, if you specify a targetLanguage, assets with the specified
+fileExtension can be seen as having the specified targetLanguage.
 
 ### setMinifier(string language, string moduleName)
 
@@ -215,16 +218,27 @@ than "javascript".
 
 ### enableShrinking()
 
-Shrinking is unique-ish feature for minifying class names
-and IDs in your assets.  Just name your classes and IDs
-with names like `_HIDDEN` or `_BORDER_BOX` or `_PANEL2`
-or basically anything that starts with an underscore
-followed by a capital letter, followed by at least one
-more capital letter, underscore or number.  When you have
-shrinking enabled, it will happen as a post-minification
-step, so be sure to minify all of your assets so their
-IDs and classes will match.
+Shrinking is power feature for minifying class names, IDs
+and object properties in front-end assets.  Just name any
+classes, IDs and properties with names like `_hidden` or
+`_borderBox` or `_panel2` or basically anything that starts
+with an underscore followed by a capital letter, followed
+by at least one more capital letter, underscore or number.
+When you have shrinking enabled, it will happen as a
+post-minification step, so be sure to minify all of your
+assets so their IDs and classes will match.
 
+### enableUse
+
+Chug's "@use" functionality is an alternative to common JS
+require statements. When `enableUse` is set to true, assets
+will be searched for @use annotations inside comments. The
+@use annotations serve as guidance for asset ordering within
+loads, and they also load assets that were referenced but
+didn't yet exist in the load. Paths can be specified with
+leading "./" for the current directory, or "../" to back up
+one or more directories, or "module-name" to pull in a Node
+module dependency.
 
 
 ## Acknowledgements
