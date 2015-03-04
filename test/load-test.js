@@ -71,7 +71,7 @@ describe('Load', function () {
 
   it('should log an error for an invalid location', function () {
     var errors = 0;
-    chug.setLogger({error: function () {
+    chug.setLog({error: function () {
       errors++;
     }});
     chug({});
@@ -120,7 +120,7 @@ describe('Load', function () {
     var stat = fs.stat;
     fs.stat = mockStat;
     var errors = 0;
-    chug.setLogger({
+    chug.setLog({
       error: function error() {
         errors++;
       }
@@ -199,11 +199,9 @@ describe('Load', function () {
 
   it('should concatenate scripts with a name', function (done) {
     var scripts = chug('test/scripts')
-      .concat('/core.js')
+      .concat()
       .then(function () {
         var first = scripts.assets[0];
-        var cached = chug.cache.get('/core.js');
-        is(first.content, cached.content);
         is(first.content.split('=').length, 4);
         done();
       });
@@ -212,20 +210,20 @@ describe('Load', function () {
   it('should serve compiled CoffeeScript with Express', function (done) {
     chug('test/scripts')
       .compile()
-      .concat('/core.js')
+      .concat()
       .then(function () {
         chug.setServer(express);
       })
-      .route()
+      .route('/core.js')
       .then(function () {
         http.get('http://127.0.0.1:8999/core.js', function (response) {
           response.on('data', function (chunk) {
             var data = '' + chunk;
-            is(/var a;/.test(data), true);
+            is.in(data, /var a;/);
             http.get('http://127.0.0.1:8999/core.js?v=1234', function (response) {
               response.on('data', function (chunk) {
                 var data = '' + chunk;
-                is(/var a;/.test(data), true);
+                is.in(data, /var a;/);
                 is.defined(response.headers.expires);
                 done();
               });
@@ -245,8 +243,8 @@ describe('Load', function () {
       })
       .route()
       .then(function () {
-        chug._shrinker = null;
-        http.get('http://127.0.0.1:8999/test/views/hello', function (response) {
+        chug.shrinker = null;
+        http.get('http://127.0.0.1:8999/test/views/hello.ltl.html', function (response) {
           response.on('data', function (chunk) {
             var data = '' + chunk;
             is(/DOCTYPE/.test(data), true);
@@ -257,9 +255,9 @@ describe('Load', function () {
   });
 
   it('should not route until a server is set', function (done) {
-    chug._server = null;
+    chug.server = null;
     var errors = 0;
-    chug.setLogger({
+    chug.setLog({
       error: function error() {
         errors++;
       }
@@ -277,6 +275,7 @@ describe('Load', function () {
     var decorations = require.resolve('za/lib/response');
     delete require.cache[decorations];
     require(decorations);
+    za.log = {info: function () {}};
     za.listen(8998);
     chug('test/scripts/b.js')
       .minify()
@@ -310,11 +309,11 @@ describe('Load', function () {
     var hasUnlinked = false;
     var isDone = false;
     chug.setServer(express);
-    var cacheBust = chug._server._cacheBust;
+    var cacheBust = chug.server.cacheBust;
     fs.mkdir('test/watch', function (err) {
       var load = chug('test/watch')
         .watch(function () {
-          chug._server = null;
+          chug.server = null;
 
           if (!hasWritten && (load.assets.length > 0)) {
             hasWritten = true;
@@ -472,19 +471,13 @@ describe('Load', function () {
       .then(function () {
         verify(load.getTags(), '');
         verify(load.getTags('blah'), 'blah');
-        load.assets.forEach(function (asset) {
-          asset.location = asset.location.replace(/.*[\/\\]/, '');
-        });
-        var html = load.getTags();
-        is(html.indexOf('src="a.js"') > -1, true);
         done();
       });
     function verify(html, path) {
-      is(html.indexOf('<script src="' + path + '/test/scripts/a.js"></script>') > -1, true);
-      is(html.indexOf('<script src="' + path + '/test/scripts/b.js"></script>') > -1, true);
-      is(html.indexOf('<link rel="stylesheet" href="' + path + '/test/styles/a.css">') > -1, true);
-      is(html.indexOf('<link rel="stylesheet" href="' + path + '/test/styles/b.css">') > -1, true);
-      is(html.length, 182 + path.length * 4);
+      is.in(html, '<script src="' + path + '/test/scripts/a.coffee.js"></script>');
+      is.in(html, '<script src="' + path + '/test/scripts/b.js"></script>');
+      is.in(html, '<link rel="stylesheet" href="' + path + '/test/styles/a.css">');
+      is.in(html, '<link rel="stylesheet" href="' + path + '/test/styles/b.styl.css">');
     }
     is(load.getTags(), '');
   });
@@ -537,7 +530,7 @@ describe('Load', function () {
         var joined = this.getLocations().join(',');
         is(joined, cwd + '/mock/a.js,' + cwd + '/mock/b.js,' + cwd + '/mock/c.js');
         chug.cache.clear();
-        chug('test/mock').sort().concat('c').each(function (asset) {
+        chug('test/mock').sort().concat().each(function (asset) {
           is(asset.content, 'var a = 1;\nvar b = 2;\nvar c = 3;\n');
           fs.readdir = readdir;
           fs.stat = stat;

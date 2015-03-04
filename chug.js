@@ -1,15 +1,11 @@
-var Type = require(__dirname + '/common/object/type');
 var Waiter = require(__dirname + '/lib/waiter');
-var Asset = require(__dirname + '/lib/asset');
-var File = require(__dirname + '/lib/file');
-var Load = require(__dirname + '/lib/load');
 var Cache = require(__dirname + '/lib/cache');
 
 /**
  * Expose a function that creates a new "Load" of files.
  */
-var api = module.exports = function (location) {
-  return new Load(location, api);
+var chug = module.exports = function (location) {
+  return new Load(location, chug);
 };
 
 /**
@@ -17,17 +13,17 @@ var api = module.exports = function (location) {
  */
 var waiter = new Waiter();
 for (var property in waiter) {
-  Object.defineProperty(api, property, {
+  Object.defineProperty(chug, property, {
     enumerable: false,
     writable: true
   });
-  api[property] = waiter[property];
+  chug[property] = waiter[property];
 }
 
 /**
  * Expose the Chug version via package.json lazy loading.
  */
-Object.defineProperty(api, 'version', {
+Object.defineProperty(chug, 'version', {
   get: function () {
     return require(__dirname + '/package.json').version;
   }
@@ -36,49 +32,49 @@ Object.defineProperty(api, 'version', {
 /**
  * Don't walk upward, and ignore DS_Store, etc.
  */
-api._ignorePattern = /^(\.+)(|DS_Store|gitignore)$/;
+chug._ignorePattern = /^(\.+)(|DS_Store|gitignore)$/;
 
 /**
  * Cache all assets so each one only needs to be loaded once.
  */
-api.cache = new Cache();
-api.onReady(function () {
-  api.cache.write();
+chug.cache = new Cache();
+chug.onReady(function () {
+  chug.cache.write();
 });
 
 /**
  * Express or similar server with server.get(path, callback) routing.
  */
-api._server = null;
+chug.server = null;
 
 /**
  * Set the Express-like server that will be used for routing.
  */
-api.setServer = function (server) {
-  api._server = server;
-  server._cacheBust = Math.round((new Date()).getTime() / 1000);
+chug.setServer = function (server) {
+  chug.server = server;
+  server.cacheBust = Math.round((new Date()).getTime() / 1000);
 };
 
 /**
- * When there's an error, we need a logger.
+ * When there's an error, we need a log.
  */
-api._logger = console;
+chug.log = console;
 
 /**
- * Set a logger that exposes `logger.error(message)`.
+ * Set a log that exposes `log.error(message)`.
  */
-api.setLogger = function (logger) {
-  api._logger = logger;
+chug.setLog = function (log) {
+  chug.log = log;
 };
 
 /**
  * By default, we'll look up compilers at compile time.
  * For example, a .jade file will trigger us to require('jade') and use that.
  * There are two ways to override:
- *  - When api.compiler[fileType] === false, the content will not be compiled.
- *  - When typeof api.compiler[fileType] == 'string', we will require(api.compiler[fileType]).
+ *  - When chug.compiler[fileType] === false, the content will not be compiled.
+ *  - When typeof chug.compiler[fileType] == 'string', we will require(chug.compiler[fileType]).
  */
-api._compilers = {
+chug._compilers = {
   txt: false,
   html: false,
   htm: false,
@@ -100,22 +96,22 @@ api._compilers = {
 /**
  * Set the compiler for a type of file, specifying the module name.
  */
-api.setCompiler = function (fileExtension, moduleName) {
+chug.setCompiler = function (fileExtension, moduleName) {
   var compiler = false;
   try {
     compiler = require(moduleName);
   }
   catch (e) {
-    api._logger.error('Could not load compiler: ' + moduleName);
+    chug.log.error('[Chug] Could not load compiler: ' + moduleName);
   }
-  api._compilers[fileExtension] = compiler;
+  chug._compilers[fileExtension] = compiler;
   return compiler;
 };
 
 /**
  * JavaScript and CSS can be minified.
  */
-api._minifiers = {
+chug._minifiers = {
   js: 'uglify-js',
   css: 'csso'
 };
@@ -123,7 +119,7 @@ api._minifiers = {
 /**
  * Several languages compile to HTML, JavaScript or CSS.
  */
-api._targetLanguages = {
+chug._targetLanguages = {
   ltl: 'html',
   jade: 'html',
   haml: 'html',
@@ -139,20 +135,42 @@ api._targetLanguages = {
 };
 
 /**
+ * Filters are used for passing loads through other modules.
+ */
+chug._filters = {
+  pack: require(__dirname + '/lib/pack')
+};
+
+/**
+ * Add a filter to the map that a Load uses for custom Asset types.
+ *
+ * @param {String}   name    A filter name.
+ * @param {Function} filter  An object that extends Asset.
+ */
+chug._addFilter = function (name, filter) {
+  chug._filters[name] = filter;
+};
+
+/**
  * Set the minifier for a type of file, specifying the module name.
  */
-api.setMinifier = function (language, moduleName) {
+chug.setMinifier = function (language, moduleName) {
   var minifier = require(moduleName);
-  api._minifiers[language] = minifier;
+  chug._minifiers[language] = minifier;
   return minifier;
 };
 
 /**
  * Enable the shrinker.
  */
-api.enableShrinking = function() {
-  api._shrinker = require(__dirname + '/lib/shrinker');
-  api.cache.each(function (asset) {
+chug.enableShrinking = function() {
+  chug.shrinker = require(__dirname + '/lib/shrinker');
+  chug.cache.each(function (asset) {
     asset.minify();
   });
 };
+
+// Load dependencies later because many of them depend on chug.
+chug.Asset = require(__dirname + '/lib/asset');
+chug.File = require(__dirname + '/lib/file');
+var Load = chug.Load = require(__dirname + '/lib/load');

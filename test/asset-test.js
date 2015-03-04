@@ -11,6 +11,7 @@ describe('Asset', function () {
     var asset = new Asset('hi.ltl');
     is(asset.location, 'hi.ltl');
   });
+
   it('should compile and recompile ltl', function () {
     var asset = new Asset('hi.ltl');
     var output;
@@ -22,22 +23,25 @@ describe('Asset', function () {
     is(output, '<div>hi</div>');
     delete chug._compilers.ltl;
   });
+
   it('should not compile JavaScript', function () {
     var asset = new Asset('hi.js');
     asset.setContent('var msg = "hi";');
     asset.compile();
     is(typeof asset.compiledContent, 'undefined');
   });
+
   it('should compile markdown', function () {
     var asset = new Asset('hi.md');
     asset.setContent('# hi');
     asset.compile();
     is(asset.compiledContent, '<h1>hi</h1>');
   });
+
   it('should not compile stuff that doesn\'t have a module', function () {
     var asset = new Asset('hi.doesnotexist');
     var errors = 0;
-    chug.setLogger({
+    chug.setLog({
       error: function error() {
         errors++;
       }
@@ -46,6 +50,7 @@ describe('Asset', function () {
     asset.compile();
     is(typeof asset.compiledContent, 'undefined');
   });
+
   it('should compile if the module exports as a function', function () {
     var asset = new Asset('hi.ltl');
 
@@ -68,13 +73,14 @@ describe('Asset', function () {
     require.cache[path].exports = ltl;
     delete chug._compilers.ltl;
   });
+
   it('should throw if the module exports an unrecognized API', function () {
     var asset = new Asset('hi.ltl');
     var ltl = require('ltl');
     var path = require.resolve('ltl');
     require.cache[path].exports = {};
     var errors = 0;
-    chug.setLogger({
+    chug.setLog({
       error: function error() {
         errors++;
       }
@@ -84,6 +90,7 @@ describe('Asset', function () {
     require.cache[path].exports = ltl;
     delete chug._compilers.ltl;
   });
+
   it('should minify', function () {
     var asset = new Asset('hi.ltl');
 
@@ -100,26 +107,31 @@ describe('Asset', function () {
 
     delete chug._compilers.ltl;
   });
+
   it('should compile and minify CoffeeScript', function () {
     var asset = new Asset('hi.coffee');
     asset.setContent('className = "_HIDDEN"').compile().minify();
     asset.setContent('className = "_VISIBLE"');
   });
+
   it('should compile and minify less', function () {
     var asset = new Asset('hi.less');
     asset.setContent('.a { width: (1 + 1) }').compile().minify();
     is(asset.minifiedContent, '.a{width:2}');
   });
+
   it('should compile and minify scss', function () {
     var asset = new Asset('hi.scss');
     asset.setContent('$white: #fff;\n.a{color: $white}').compile().minify();
     is(asset.minifiedContent, '.a{color:#fff}');
   });
+
   it('should compile and minify stylus', function () {
     var asset = new Asset('hi.styl');
     asset.setContent('$white = #fff\n.a\n color $white').compile().minify();
     is(asset.minifiedContent, '.a{color:#fff}');
   });
+
   it('should minify CSS', function () {
     var asset = new Asset('hi.css');
     asset.setContent('.hidden{display:none;}').minify();
@@ -133,17 +145,20 @@ describe('Asset', function () {
     is(/;/.test(asset.minifiedContent), false);
     chug.setMinifier('css', 'csso');
   });
+
   it('should auto route', function () {
     var asset = new Asset('/views/auto.ltl');
     asset.setContent('// AUTOROUTE\nhtml\n head>title Tick\n body Boom');
     asset.compile();
   });
+
   it('should auto route with a context', function () {
     var asset = new Asset('/auto.ltl');
     asset.setContent('// AUTOROUTE {"boom": "BOOM!"}\nhtml\n head>title Tick\n body ${boom}');
     asset.compile();
     is(asset.context.boom, 'BOOM!');
   });
+
   it('should get content', function(done) {
     function verifyContents(asset, expected) {
       var concat = asset.getContent()
@@ -153,7 +168,7 @@ describe('Asset', function () {
       is(concat, expected);
     }
     chug.enableShrinking();
-    chug._shrinker.reset();
+    chug.shrinker.reset();
     chug('test/scripts/c.coffee')
       .each(function (asset) {
         verifyContents(asset, "c = '_CC'\nc = '_CC'\nc = '_CC'\n");
@@ -168,17 +183,22 @@ describe('Asset', function () {
       })
       .then(done);
   });
+
   it('should generate tokens longer than one character', function () {
     chug.enableShrinking();
-    chug._shrinker.reset();
-    chug._shrinker.replacementCharacters = 'ab';
-    var shrunken = chug._shrinker.shrink('_AA _BB _CC _DD _EE _FF _GG _AA');
-    is(shrunken, 'a b aa ab ba bb aaa a');
-    chug._shrinker = null;
+    chug.shrinker.reset();
+    chug.shrinker.replacementCharacters = 'ab';
+    var asset = new Asset('ab.js');
+    asset.setContent('var o = "_AA _BB _CC _DD _EE _FF _GG _AA";');
+    asset.minify();
+    var minified = asset.getMinifiedContent();
+    is(minified, 'var o="a b aa ab ba bb aaa a";');
+    chug.shrinker = null;
   });
+
   it('should shrink an anonymous function', function () {
     chug.enableShrinking();
-    chug._shrinker.reset();
+    chug.shrinker.reset();
     chug._compilers.temp = function (c) {
       return function () {
         return '_TEMP';
@@ -187,9 +207,10 @@ describe('Asset', function () {
     var anon = new Asset('test.temp');
     anon.setContent('_TEMP').compile().minify();
     is(/'a'/.test(anon.getMinifiedContent().toString()), true);
-    chug._shrinker = null;
+    chug.shrinker = null;
     delete chug._compilers.temp;
   });
+
   it('should cull based on comments', function () {
     var asset = new Asset('cull.js');
     asset.setContent(
@@ -216,6 +237,7 @@ describe('Asset', function () {
   });
 
   describe('.replace', function () {
+
     it('replaces content', function () {
       var asset = new Asset('test.js');
       var content = 'alert("This is a test");';
@@ -224,6 +246,7 @@ describe('Asset', function () {
       content = asset.getContent();
       is(content, 'alert("This is a success!");');
     });
+
     it('replaces minified content', function () {
       var asset = new Asset('test.js');
       var content = 'alert( "This is a test" );';
@@ -232,6 +255,7 @@ describe('Asset', function () {
       content = asset.getMinifiedContent();
       is.in(content, 'success');
     });
+
     it('calls .gzip if it has been called before', function (done) {
       var asset = new Asset('test.js');
       var content = 'alert( "This is a test" );';

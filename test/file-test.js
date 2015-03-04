@@ -23,7 +23,7 @@ describe('File', function () {
       // Shouldn't compile, shrink or minify.
       icon.compile().minify().onceReady(function () {
         is(icon.getMinifiedContent(), icon.content);
-        chug._shrinker = null;
+        chug.shrinker = null;
         done();
       });
     });
