@@ -151,6 +151,9 @@ verbose = true;
 //-env:dev,debug
 ```
 
+### .wrap()
+Wraps javascript asset's content or compiled content in closure.
+
 ### .write([directory, filename][, mode])
 Writes one or more assets to files. If the directory
 and filename are provided they will determine the write location,
